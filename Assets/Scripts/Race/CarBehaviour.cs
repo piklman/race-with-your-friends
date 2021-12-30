@@ -2,12 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using Base;
+
 public class CarBehaviour : MonoBehaviour
 {
+    // Base Classes
+    private Vectors vectors = new Vectors();
+
     // Referencing values
     [SerializeField] private float maxEngineSpd; /* The maximum speed that any engine can reach without external forces (including with items).
     Used for speed ratios - for example particles are simulated at a speed of {CURRENT SPEED}/maxEngineSpd */
-    [SerializeField] private float linearDrag; // Will need to change based on terrain
+    [SerializeField] private float friction; // Will need to change based on terrain
+    [SerializeField] private float unitSF; // Scale factor from stat values to real distance values
 
     // Components
     private Rigidbody2D rb;
@@ -21,7 +27,10 @@ public class CarBehaviour : MonoBehaviour
     [SerializeField] private float boostEmissionSF;
     [SerializeField] private float emissionSF;
 
-    // Vehicle stats
+    // Vehicle Physics
+    [SerializeField] private float speed;
+
+    // Vehicle Stats
     [SerializeField] private float regMaxSpd; // Max speed without powerups
     [SerializeField] private float maxSpd;
 
@@ -31,8 +40,14 @@ public class CarBehaviour : MonoBehaviour
     [SerializeField] private float acc;
 
     [SerializeField] private float regTurn;
+    [SerializeField] private float turnSF;
+
     [SerializeField] private float regDrift;
+
+    [SerializeField] private float regHandling;
+
     [SerializeField] private float regPowerup;
+
 
     [SerializeField] private float driftSF;
     [SerializeField] private float powerupSF; // Scale factor for keeping stats similar in value while still balanced
@@ -41,24 +56,23 @@ public class CarBehaviour : MonoBehaviour
     [SerializeField] private bool terminalVelocity;
 
     // Turning
-    [SerializeField] private float maxRotationPerSec;
+    [SerializeField] private bool extraFriction;
 
     // Powerup
     [SerializeField] private string powerupItem;
     private bool boosting;
 
-	void Start()
-	{
+    void Start()
+    {
         // Physics
-        acc = regAcc;
-        maxSpd = regMaxSpd;
+        acc = regAcc * unitSF;
+        maxSpd = regMaxSpd * unitSF;
 
         // Rigidbody
         rb = gameObject.GetComponent<Rigidbody2D>();
-        rb.drag = linearDrag;
 
         // Particle System
-        ps = gameObject.GetComponent<ParticleSystem>();
+        ps = gameObject.GetComponentInChildren<ParticleSystem>();
 
         emissionModule = ps.emission;
         emissionModule.enabled = true;
@@ -71,89 +85,133 @@ public class CarBehaviour : MonoBehaviour
 
         // Items
         boosting = false;
-	}
+    }
 
-	void FixedUpdate()
+    // Physics Functions
+    void HandleRapidDeceleration()
     {
-        var forward = Input.GetButton("Forward");
-        var brake = Input.GetButton("Brake/Reverse");
-        var turning = Input.GetAxis("Turn");
-
-        // Particle System
-        // Assume that the car is moving. See Acceleration for handling if it is not.
-        emissionModule.rateOverTime = (rb.velocity.magnitude / maxEngineSpd) * emissionSF;
-
-        // Acceleration
-        // issue - can't decelerate while accelerating - should cancel acc to 0
-        // issue - not much control over the maximum speed (rb.velocity.magnitude + regAcc is never greater than or equal to regMaxSpd because of the linear drag)
-
-        if (forward && brake)
+        var dec = Mathf.Pow(friction, 2) * Mathf.Sign(speed);
+        if (speed - dec > maxSpd)
         {
-            // Handbrake Drift
+            speed -= dec;
         }
-        else if (forward || boosting)
+        else if (speed - dec < maxSpd)
         {
-            // Accelerate forwards
-            if (rb.velocity.magnitude + acc < maxSpd)
-            {
-                rb.velocity += new Vector2(rb.transform.up.x, rb.transform.up.y) * acc * Time.fixedDeltaTime;
-            }
+            speed = maxSpd;
         }
-        else if (brake)
+    }
+
+    void HandleNoAcceleration()
+    {
+        if (speed > 0 && speed - friction > 0)
         {
-            // Accelerate backwards
-            if (rb.velocity.magnitude + acc < maxSpd)
-            {
-                rb.velocity -= new Vector2(rb.transform.up.x, rb.transform.up.y) * acc * Time.fixedDeltaTime;
-            }
+            speed -= friction;
+        }
+        else if (speed < 0 && speed - friction < 0)
+        {
+            speed += friction;
         }
         else
         {
-            // Not going forwards or reversing, so the particle system assumption was false; revert.
+            speed = 0;
+        }
+    }
+
+    void HandleMovement()
+    {
+        var deltaSpeed = Time.fixedDeltaTime * acc;
+        var accDir = 0f;
+
+        if (Input.GetButton("Forward"))
+        {
+            accDir = 1f;
+        }
+
+        if (Input.GetButton("Brake"))
+        {
+            accDir -= 1f;
+        }
+
+        if (accDir == 0 && !vectors.VectorEqualsApprox(rb.velocity, Vector2.zero))
+        {
+            // The assumption was false. Car moving at const speed.
             emissionModule.rateOverTime = 0;
+            HandleNoAcceleration();
+            rb.velocity = transform.up * speed;
         }
 
-        // Turning
-        if (Input.GetAxis("Turn") > 0)
+        else if (accDir == 0)
         {
-            if (rb.angularVelocity + regTurn * turning < maxRotationPerSec)
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            if (Mathf.Abs(speed + deltaSpeed) < maxSpd)
             {
-                // Accelerates rotation of the car to the right by regTurn degrees/s.
-                rb.angularVelocity += regTurn * turning;
+                speed += deltaSpeed * accDir;
+            }
+            else if (speed > maxSpd)
+            {
+                HandleRapidDeceleration();
             }
             else
             {
-                // Already hit max turn speed, or accelerating further would go over max speed. So set speed to max speed.
-                rb.angularVelocity = maxRotationPerSec;
+                speed = maxSpd;
             }
+            rb.velocity = transform.up * speed;
         }
 
-        else if (Input.GetAxis("Turn") < 0)
+    }
+
+    void HandleTurningForces()
+    {
+        var turning = Input.GetAxis("Turn");
+
+        // Below is used so the turning doesn't get ridiculous
+        var speedUsed = speed;
+        if (Mathf.Abs(speed) > regMaxSpd) { speedUsed = regMaxSpd; }
+        rb.AddTorque(turning * regTurn * Mathf.Pow(speedUsed, 2f) * turnSF * Time.fixedDeltaTime);
+	}
+
+    IEnumerator ResetAfterBoost(float time)
+    {
+        yield return new WaitForSeconds(time);
+        acc = regAcc * unitSF;
+        maxSpd = regMaxSpd * unitSF;
+        colorOverLifetimeModule.color = regGradient;
+        emissionSF = regEmissionSF;
+        boosting = false;
+    }
+
+    void ThrusterSlowdown()
+    {
+        if (rb.velocity.magnitude > maxSpd)
         {
-            if (rb.angularVelocity + regTurn * turning > -maxRotationPerSec)
-            {
-                // Accelerates rotation of the car to the left by regTurn degrees/s.
-                rb.angularVelocity += regTurn * turning;
-            }
-            else
-            {
-                // Already hit max turn speed, or accelerating further would go over max speed. So set speed to max speed.
-                rb.angularVelocity = -maxRotationPerSec;
-            }
+            print("HI");
+            rb.drag = friction * regPowerup;
+            ThrusterSlowdown();
         }
+        else
+        {
+            // Now car has slowed to an acceptable speed so drag returns to 0.
+            rb.drag = 0;
+            rb.velocity = new Vector2(rb.transform.up.x, rb.transform.up.y) * maxSpd;
+        }
+    }
 
-        // powerupItem
+    void HandlePowerups()
+    {
         if (Input.GetButtonDown("Item"))
         {
             switch (powerupItem)
             {
                 case "Boost":
-                    maxSpd = maxEngineSpd;
-                    acc = boostAcc;
+                    maxSpd = maxEngineSpd * unitSF;
+                    acc = boostAcc * unitSF;
                     colorOverLifetimeModule.color = boostGradient;
                     emissionSF = boostEmissionSF;
                     boosting = true;
-                
+
                     StartCoroutine(ResetAfterBoost(regPowerup * powerupSF));
                     powerupItem = "";
                     break;
@@ -189,34 +247,26 @@ public class CarBehaviour : MonoBehaviour
         }
     }
 
+    void FixedUpdate()
+    {
+        // Particle System
+        // Assume that the car is moving. See Acceleration for handling if it is not.
+        emissionModule.rateOverTime = (rb.velocity.magnitude / maxEngineSpd) * emissionSF;
+
+        // Turning
+        HandleTurningForces();
+
+        // Acceleration
+        // issue - can't decelerate while accelerating - should cancel acc to 0
+        // issue - not much control over the maximum speed (rb.velocity.magnitude + regAcc is never greater than or equal to regMaxSpd because of the linear drag)
+        HandleMovement();
+
+        // Powerups
+        HandlePowerups();
+    }
+
     // Update is called once per frame
     void Update()
     {
-    }
-
-    IEnumerator ResetAfterBoost(float time)
-	{
-        yield return new WaitForSeconds(time);
-        acc = regAcc;
-        maxSpd = regMaxSpd;
-        colorOverLifetimeModule.color = regGradient;
-        emissionSF = regEmissionSF;
-        boosting = false;
-	}
-
-    void ThrusterSlowdown()
-    {
-        if (rb.velocity.magnitude > maxSpd)
-        {
-            print("HI");
-            rb.drag = linearDrag * regPowerup;
-            ThrusterSlowdown();
-        }
-        else
-        {
-            // Now car has slowed to an acceptable speed so drag returns to normal.
-            rb.drag = linearDrag;
-            rb.velocity = new Vector2(rb.transform.up.x, rb.transform.up.y) * maxSpd;
-        }
     }
 }
