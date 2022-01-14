@@ -161,21 +161,27 @@ public class CarBehaviour : MonoBehaviour
         HandleFriction();
     }
 
-    void HandleTurningForces()
+    void HandleTurning()
     {
         var terminalAngularVelocity = 20f;
-        if (Mathf.Abs(rb.angularVelocity) < terminalAngularVelocity)
-        {
-            var turning = Input.GetAxis("Turn");
 
-            // Below is used so the turning doesn't get ridiculous
-            var speedUsed = rawVelocity;
-            if (Mathf.Abs(rawVelocity) > Mathf.Abs(stats.spd))
-            {
-                speedUsed = stats.spd;
-            }
-            rb.AddTorque(turning * stats.handling * 0.5f * speedUsed * Time.fixedDeltaTime);
+        // Below is used so the turning doesn't get ridiculous, and is still based on velocity.
+        var speedUsed = rawVelocity;
+        if (Mathf.Abs(rawVelocity) > Mathf.Abs(stats.spd))
+            speedUsed = stats.spd;
+
+        // Direction of rotation
+        var dirotation = Input.GetAxis("Turn");
+
+        // Set the change in angular velocity so we can use it to check if extra turning is allowed.
+        var deltaAngularVelocity = dirotation * (stats.handling * speedUsed * Time.fixedDeltaTime);
+
+        if (Mathf.Abs(rb.angularVelocity + deltaAngularVelocity) < terminalAngularVelocity)
+        {
+            rb.angularVelocity += deltaAngularVelocity;
         }
+        else
+            rb.angularVelocity = terminalAngularVelocity;
 	}
 
     IEnumerator ResetAfterBoost(float time)
@@ -259,7 +265,8 @@ public class CarBehaviour : MonoBehaviour
         emissionModule.rateOverTime = (rb.velocity.magnitude / maxEngineSpd) * emissionSF;
 
         // Turning
-        HandleTurningForces();
+        if (Input.GetAxisRaw("Turn") != 0)
+            HandleTurning();
 
         // Acceleration
         // issue - can't decelerate while accelerating - should cancel acc to 0
