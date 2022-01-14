@@ -6,6 +6,9 @@ using Base;
 
 public class CarBehaviour : MonoBehaviour
 {
+    [SerializeField] private GameObject collisionSheet;
+    private Sprite collision;
+
     // Base Classes
     private Vectors vectors = new Vectors();
 
@@ -13,6 +16,7 @@ public class CarBehaviour : MonoBehaviour
     [SerializeField] private float maxEngineSpd; /* The maximum speed that any engine can reach without external forces (including with items).
     Used for speed ratios - for example particles are simulated at a speed of {CURRENT SPEED}/maxEngineSpd */
     [SerializeField] private float friction; // Will need to change based on terrain
+    [SerializeField] private float rapidFrictionMultiplier;
     [SerializeField] private float unitSF; // Scale factor from stat values to real distance values
 
     // Components
@@ -20,31 +24,23 @@ public class CarBehaviour : MonoBehaviour
     private ParticleSystem ps;
     private ParticleSystem.EmissionModule emissionModule;
     private ParticleSystem.ColorOverLifetimeModule colorOverLifetimeModule;
-
     [SerializeField] private ParticleSystem.MinMaxGradient regGradient;
     [SerializeField] private ParticleSystem.MinMaxGradient boostGradient;
+    
     [SerializeField] private float regEmissionSF;
     [SerializeField] private float boostEmissionSF;
     [SerializeField] private float emissionSF;
 
     // Vehicle Physics
-    [SerializeField] private float speed;
+    [SerializeField] private float rawVelocity; // Only the speed + direction of thrust relative to current position.
+    [SerializeField] private Stats baseStats;
+    [SerializeField] private Stats stats;
 
     // Vehicle Stats
     [SerializeField] private float regMaxSpd; // Max speed without powerups
-    [SerializeField] private float maxSpd;
-
     [SerializeField] private float regAcc;
     [SerializeField] private float boostAcc;
     [SerializeField] private float thrusterAcc;
-    [SerializeField] private float acc;
-
-    [SerializeField] private float regTurn;
-    [SerializeField] private float turnSF;
-
-    [SerializeField] private float regDrift;
-
-    [SerializeField] private float regHandling;
 
     [SerializeField] private float regPowerup;
 
@@ -57,6 +53,7 @@ public class CarBehaviour : MonoBehaviour
 
     // Turning
     [SerializeField] private bool extraFriction;
+    [SerializeField] private float turnSF;
 
     // Powerup
     [SerializeField] private string powerupItem;
@@ -64,9 +61,10 @@ public class CarBehaviour : MonoBehaviour
 
     void Start()
     {
+        collision = collisionSheet.GetComponent<Sprite>();
+
         // Physics
-        acc = regAcc * unitSF;
-        maxSpd = regMaxSpd * unitSF;
+        stats = baseStats;
 
         // Rigidbody
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -90,36 +88,39 @@ public class CarBehaviour : MonoBehaviour
     // Physics Functions
     void HandleRapidDeceleration()
     {
-        var dec = Mathf.Pow(friction, 2) * Mathf.Sign(speed);
-        if (speed - dec > maxSpd)
+        var dec = rapidFrictionMultiplier * Mathf.Sign(rawVelocity);
+        if (Mathf.Abs(rawVelocity) + dec > stats.spd)
         {
-            speed -= dec;
-        }
-        else if (speed - dec < maxSpd)
-        {
-            speed = maxSpd;
+            if (rawVelocity - dec > stats.spd)
+            {
+                rawVelocity -= dec;
+            }
+            else if (rawVelocity + dec < -stats.spd)
+            {
+                rawVelocity += dec;
+            }
         }
     }
 
-    void HandleNoAcceleration()
+    void HandleFriction()
     {
-        if (speed > 0 && speed - friction > 0)
+        if (rawVelocity > 0 && (rawVelocity - friction) > 0)
         {
-            speed -= friction;
+            rawVelocity -= friction;
         }
-        else if (speed < 0 && speed - friction < 0)
+        else if (rawVelocity < 0 && (rawVelocity - friction) < 0)
         {
-            speed += friction;
+            rawVelocity += friction;
         }
         else
         {
-            speed = 0;
+            rawVelocity = 0;
         }
     }
 
     void HandleMovement()
     {
-        var deltaSpeed = Time.fixedDeltaTime * acc;
+        var deltaSpeed = Time.fixedDeltaTime * stats.acc;
         var accDir = 0f;
 
         if (Input.GetButton("Forward"))
@@ -132,52 +133,56 @@ public class CarBehaviour : MonoBehaviour
             accDir -= 1f;
         }
 
-        if (accDir == 0 && !vectors.VectorEqualsApprox(rb.velocity, Vector2.zero))
-        {
-            // The assumption was false. Car moving at const speed.
-            emissionModule.rateOverTime = 0;
-            HandleNoAcceleration();
-            rb.velocity = transform.up * speed;
-        }
+		if (accDir == 0 && !vectors.VectorEqualsApprox(rb.velocity, Vector2.zero))
+		{
+			// The assumption was false. Car moving at const speed.
+			emissionModule.rateOverTime = 0;
+			rb.velocity = transform.up * rawVelocity;
+		}
 
-        else if (accDir == 0)
-        {
-            rb.velocity = Vector2.zero;
-        }
-        else
-        {
-            if (Mathf.Abs(speed + deltaSpeed) < maxSpd)
+		else if (accDir == 0)
+		{
+			rb.velocity = Vector2.zero;
+		}
+
+		else
+		{
+            if (Mathf.Abs(rawVelocity + deltaSpeed) < stats.spd)
             {
-                speed += deltaSpeed * accDir;
+                rawVelocity += deltaSpeed * accDir;
             }
-            else if (speed > maxSpd)
+            else if (Mathf.Abs(rawVelocity) > stats.spd)
             {
                 HandleRapidDeceleration();
             }
-            else
-            {
-                speed = maxSpd;
-            }
-            rb.velocity = transform.up * speed;
+            rb.velocity = transform.up * rawVelocity;
         }
 
+        HandleFriction();
     }
 
     void HandleTurningForces()
     {
-        var turning = Input.GetAxis("Turn");
+        var terminalAngularVelocity = 20f;
+        if (Mathf.Abs(rb.angularVelocity) < terminalAngularVelocity)
+        {
+            var turning = Input.GetAxis("Turn");
 
-        // Below is used so the turning doesn't get ridiculous
-        var speedUsed = speed;
-        if (Mathf.Abs(speed) > regMaxSpd) { speedUsed = regMaxSpd; }
-        rb.AddTorque(turning * regTurn * Mathf.Pow(speedUsed, 2f) * turnSF * Time.fixedDeltaTime);
+            // Below is used so the turning doesn't get ridiculous
+            var speedUsed = rawVelocity;
+            if (Mathf.Abs(rawVelocity) > Mathf.Abs(stats.spd))
+            {
+                speedUsed = stats.spd;
+            }
+            rb.AddTorque(turning * stats.handling * 0.5f * speedUsed * Time.fixedDeltaTime);
+        }
 	}
 
     IEnumerator ResetAfterBoost(float time)
     {
         yield return new WaitForSeconds(time);
-        acc = regAcc * unitSF;
-        maxSpd = regMaxSpd * unitSF;
+        stats.acc = regAcc * unitSF;
+        stats.spd = regMaxSpd * unitSF;
         colorOverLifetimeModule.color = regGradient;
         emissionSF = regEmissionSF;
         boosting = false;
@@ -185,7 +190,7 @@ public class CarBehaviour : MonoBehaviour
 
     void ThrusterSlowdown()
     {
-        if (rb.velocity.magnitude > maxSpd)
+        if (rb.velocity.magnitude > stats.spd)
         {
             print("HI");
             rb.drag = friction * regPowerup;
@@ -195,7 +200,7 @@ public class CarBehaviour : MonoBehaviour
         {
             // Now car has slowed to an acceptable speed so drag returns to 0.
             rb.drag = 0;
-            rb.velocity = new Vector2(rb.transform.up.x, rb.transform.up.y) * maxSpd;
+            rb.velocity = new Vector2(rb.transform.up.x, rb.transform.up.y) * stats.spd;
         }
     }
 
@@ -206,8 +211,8 @@ public class CarBehaviour : MonoBehaviour
             switch (powerupItem)
             {
                 case "Boost":
-                    maxSpd = maxEngineSpd * unitSF;
-                    acc = boostAcc * unitSF;
+                    stats.spd = maxEngineSpd * unitSF;
+                    stats.acc = boostAcc * unitSF;
                     colorOverLifetimeModule.color = boostGradient;
                     emissionSF = boostEmissionSF;
                     boosting = true;
@@ -269,4 +274,9 @@ public class CarBehaviour : MonoBehaviour
     void Update()
     {
     }
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+        rawVelocity = 0;
+	}
 }

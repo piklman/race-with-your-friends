@@ -36,4 +36,16 @@ namespace Base
             return new Vector2(v3.x, v3.y);
         }
     }
+
+    [System.Serializable]
+    public struct Stats
+    {
+        ///public float hp; // Vehicle durability
+        public float spd; // Max speed
+        public float acc; // Acceleration
+        public float handling; // Handling
+        ///public float offroad; // Offroad
+        ///public float braking; // Braking strength
+        ///public float luck; // Item drops / strength
+    }
 }
