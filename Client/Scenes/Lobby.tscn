@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/lobby.gd" type="Script" id=1]
+
+[node name="Lobby" type="CanvasLayer"]
+script = ExtResource( 1 )
+
+[node name="StartClient" type="Button" parent="."]
+margin_left = 932.954
+margin_top = 6.25812
+margin_right = 1014.95
+margin_bottom = 31.2581
+text = "Start Client"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LocalPlayerID" type="Label" parent="."]
+margin_left = 927.488
+margin_top = 37.779
+margin_right = 1030.49
+margin_bottom = 64.779
+text = "LocalPlayerID:"
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -1,0 +1,286 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Sprites/Maps/temporary cock map.bg.png" type="Texture" id=5]
+[ext_resource path="res://Sprites/Maps/temporary cock map.png" type="Texture" id=6]
+
+[node name="Scene" type="Node2D"]
+
+[node name="Map" type="StaticBody2D" parent="."]
+position = Vector2( -399.024, -240.338 )
+collision_mask = 2
+
+[node name="temporary cock mapbg" type="Sprite" parent="Map"]
+position = Vector2( 378.176, 441.324 )
+scale = Vector2( 100000, 100000 )
+texture = ExtResource( 5 )
+
+[node name="temporary cock map" type="Sprite" parent="Map"]
+position = Vector2( 512.295, 552.411 )
+texture = ExtResource( 6 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Map"]
+position = Vector2( 193.51, -2.59464 )
+polygon = PoolVector2Array( 287.225, -147.555, 310.003, -169.274, 321.114, -150.073, 343.139, -166.759, 350.481, -159.417, 350.167, 294.419, 332.923, 317.014, 334.433, 1170.58, 326.487, 1180.64, 305.186, 1160.27, 305.571, 324.15, 288.328, 307.501 )
+
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="Map"]
+position = Vector2( 425.232, -97.7172 )
+scale = Vector2( 0.971898, 0.444472 )
+polygon = PoolVector2Array( 286.729, -124.382, 310.166, -161.329, 318.342, -143.451, 318.635, 890.188, 298.483, 926.462, 287.876, 908.633 )
+
+[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="Map"]
+polygon = PoolVector2Array( 287.225, -147.555, 310.003, -169.274, 319.009, -159.739, 319.104, 942.243, 310.185, 949.973, 287.59, 928.567 )
+
+[node name="CollisionPolygon2D4" type="CollisionPolygon2D" parent="Map"]
+position = Vector2( -0.530334, 0 )
+polygon = PoolVector2Array( 271.309, 1187.7, 288.77, 1163.16, 481.793, 1127.77, 489.817, 1134.87, 499.54, 1137.17, 487.519, 1143.01, 473.298, 1162.22, 278.388, 1197.14 )
+
+[node name="CollisionPolygon2D5" type="CollisionPolygon2D" parent="Map"]
+position = Vector2( 254.368, 2320.44 )
+scale = Vector2( 1.004, -1 )
+polygon = PoolVector2Array( 271.518, 1167.21, 481.989, 1122.26, 490.374, 1129.84, 502.672, 1136.01, 502.951, 1146.4, 497.362, 1150.32, 306.79, 1191.71 )
+
+[node name="CollisionPolygon2D6" type="CollisionPolygon2D" parent="Map"]
+polygon = PoolVector2Array( 499.124, 1315.95, 509.875, 1308.05, 530.872, 1327.06, 530.984, 1381.18, 520.875, 1389.51, 499.172, 1367.51 )
+
+[node name="Players" type="Node2D" parent="."]
+
+[node name="Cameras" type="Node2D" parent="."]
+
+[node name="Canvas" type="CanvasLayer" parent="."]
+
+[node name="Stats" type="Control" parent="Canvas"]
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Position" type="Control" parent="Canvas/Stats"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PosValue" type="TextEdit" parent="Canvas/Stats/Position"]
+margin_left = 4.0
+margin_top = 15.0
+margin_right = 106.0
+margin_bottom = 49.0
+text = "(0, 0)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PosButton" type="Button" parent="Canvas/Stats/Position"]
+margin_left = 110.828
+margin_top = 18.2109
+margin_right = 175.828
+margin_bottom = 40.2109
+text = "Teleport"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="PosLabel" type="Label" parent="Canvas/Stats/Position"]
+margin_left = 5.0
+margin_right = 57.0
+margin_bottom = 14.0
+text = "Position"
+
+[node name="MaxSpeed" type="Control" parent="Canvas/Stats"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MaxSpdSlider" type="HSlider" parent="Canvas/Stats/MaxSpeed"]
+margin_left = 5.52972
+margin_top = 52.0
+margin_right = 130.53
+margin_bottom = 92.0
+max_value = 5.0
+step = 0.1
+value = 5.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MaxSpdValue" type="Label" parent="Canvas/Stats/MaxSpeed"]
+margin_left = 130.0
+margin_top = 64.0
+margin_right = 146.0
+margin_bottom = 78.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MaxSpdLabel" type="Label" parent="Canvas/Stats/MaxSpeed"]
+margin_left = 5.04538
+margin_top = 50.3095
+margin_right = 58.0454
+margin_bottom = 64.3095
+text = "Max Spd"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Acc" type="Control" parent="Canvas/Stats"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AccSlider" type="HSlider" parent="Canvas/Stats/Acc"]
+margin_left = 6.05948
+margin_top = 85.7621
+margin_right = 131.059
+margin_bottom = 125.762
+max_value = 1.0
+step = 0.02
+value = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AccValue" type="Label" parent="Canvas/Stats/Acc"]
+margin_left = 130.941
+margin_top = 98.4054
+margin_right = 144.941
+margin_bottom = 112.405
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="AccLabel" type="Label" parent="Canvas/Stats/Acc"]
+margin_left = 6.0
+margin_top = 84.5838
+margin_right = 63.0
+margin_bottom = 98.5838
+text = "Acc"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Turn" type="Control" parent="Canvas/Stats"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnSlider" type="HSlider" parent="Canvas/Stats/Turn"]
+margin_left = 5.52971
+margin_top = 121.227
+margin_right = 130.53
+margin_bottom = 161.227
+max_value = 5.0
+step = 0.1
+value = 0.6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnValue" type="Label" parent="Canvas/Stats/Turn"]
+margin_left = 132.178
+margin_top = 133.697
+margin_right = 149.178
+margin_bottom = 147.697
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TurnLabel" type="Label" parent="Canvas/Stats/Turn"]
+margin_left = 7.0
+margin_top = 119.346
+margin_right = 40.0
+margin_bottom = 133.346
+text = "Turn"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Friction" type="Control" parent="Canvas/Stats"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FrictionSlider" type="HSlider" parent="Canvas/Stats/Friction"]
+margin_left = 6.05948
+margin_top = 154.53
+margin_right = 131.059
+margin_bottom = 194.53
+max_value = 1.0
+step = 0.02
+value = 0.1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FrictionValue" type="Label" parent="Canvas/Stats/Friction"]
+margin_left = 132.0
+margin_top = 167.0
+margin_right = 150.0
+margin_bottom = 181.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="FrictionLabel" type="Label" parent="Canvas/Stats/Friction"]
+margin_left = 6.35677
+margin_top = 153.092
+margin_right = 46.3568
+margin_bottom = 167.092
+text = "Friction"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CoefficientOfRestitution" type="Control" parent="Canvas/Stats"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CoRSlider" type="HSlider" parent="Canvas/Stats/CoefficientOfRestitution"]
+margin_left = 6.0
+margin_top = 188.0
+margin_right = 131.0
+margin_bottom = 228.0
+max_value = 1.0
+step = 0.02
+value = 0.1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CoRValue" type="Label" parent="Canvas/Stats/CoefficientOfRestitution"]
+margin_left = 131.0
+margin_top = 201.0
+margin_right = 144.0
+margin_bottom = 215.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CoRLabel" type="Label" parent="Canvas/Stats/CoefficientOfRestitution"]
+margin_left = 7.39417
+margin_top = 186.108
+margin_right = 77.3942
+margin_bottom = 200.108
+text = "Restitution (e)"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Network" type="Control" parent="Canvas"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

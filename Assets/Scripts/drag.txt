@@ -1,3 +1,0 @@
-v = ((F / drag) - (time * F)) / mass
-mv + Ft = F/drag
-drag = F/(mv+Ft)
