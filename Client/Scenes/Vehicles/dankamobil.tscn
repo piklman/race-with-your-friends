@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/Game/player.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/Cars/DankaMobil.png" type="Texture" id=2]
+
+[node name="Player" type="KinematicBody2D"]
+rotation = 1.5708
+collision_mask = 63
+script = ExtResource( 1 )
+DEBUG_DEFAULT = Color( 0.478431, 1, 0, 1 )
+DEBUG_WARN = Color( 1, 0, 0, 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+rotation = 1.5708
+texture = ExtResource( 2 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2( 14.08, 0 )
+polygon = PoolVector2Array( -43.9999, 15.0002, -36.9999, 14.9376, -36.9374, 15.9376, -32.1249, 15.9376, -32.0624, 15.1876, -26.0624, 15.0626, -24.25, 12.0001, -24.125, 10.0626, -20.0502, 9.99695, -18.1582, 7.99981, -17.1597, 5.89757, 11.9132, 5.84022, 11.9875, 5.02265, 18.8466, 2.95901, 18.8908, 1.10285, 19.9957, 1.10285, 19.9957, 0.0421906, -47.9359, -0.036665, -47.8475, 7.96248, -45.9914, 12.9564, -44.0026, 12.9564 )
+
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="."]
+position = Vector2( 14.08, 0 )
+scale = Vector2( 1, -1 )
+polygon = PoolVector2Array( -43.9999, 15.0002, -36.9999, 14.9376, -36.9374, 15.9376, -32.1249, 15.9376, -32.0624, 15.1876, -26.0624, 15.0626, -24.25, 12.0001, -24.125, 10.0626, -20.0502, 9.99695, -18.1582, 7.99981, -17.1597, 5.89757, 11.9132, 5.84022, 11.9875, 5.02265, 18.8466, 2.95901, 18.8908, 1.10285, 19.9957, 1.10285, 19.9957, 0.0421906, -47.9359, -0.036665, -47.8475, 7.96248, -45.9914, 12.9564, -44.0026, 12.9564 )
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+margin_left = -64.6973
+margin_top = 47.457
+margin_right = 27.3027
+margin_bottom = 91.457
+rect_rotation = -90.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ID" type="Label" parent="CenterContainer"]
+margin_left = 32.0
+margin_top = 15.0
+margin_right = 59.0
+margin_bottom = 29.0
+grow_vertical = 2
+text = "Test"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -1,0 +1,177 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Sprites/Maps/The Scorpian map.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/Game/checkpoint_handler.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Game/checkpoint.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/Game/ice.gd" type="Script" id=4]
+[ext_resource path="res://Scripts/Game/ice_handler.gd" type="Script" id=5]
+
+[sub_resource type="SegmentShape2D" id=1]
+a = Vector2( 1, 0 )
+
+[sub_resource type="SegmentShape2D" id=2]
+a = Vector2( 204.666, -162.731 )
+b = Vector2( 158.322, -63.6686 )
+
+[sub_resource type="SegmentShape2D" id=3]
+a = Vector2( 156.825, -65.1717 )
+b = Vector2( 242.739, 11.1952 )
+
+[sub_resource type="SegmentShape2D" id=4]
+a = Vector2( -666.451, -2074.29 )
+b = Vector2( -597.491, -1953.33 )
+
+[sub_resource type="SegmentShape2D" id=5]
+b = Vector2( -0.510193, -132.19 )
+
+[sub_resource type="SegmentShape2D" id=6]
+a = Vector2( -1332.03, 207.634 )
+b = Vector2( -1331.35, 276.593 )
+
+[sub_resource type="SegmentShape2D" id=7]
+a = Vector2( 168.774, 61.2165 )
+b = Vector2( 162.182, -182.615 )
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 56.7605, 216.752 )
+
+[node name="The Scorpion Map" type="Node2D"]
+
+[node name="Textures" type="Node2D" parent="."]
+
+[node name="Foreground" type="Sprite" parent="Textures"]
+position = Vector2( -220.312, -130.57 )
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Concrete" type="StaticBody2D" parent="."]
+collision_layer = 4
+
+[node name="IceSlideCollision1" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( 373.178, -719.587, 348.792, -902.061, 366.611, -1079.62, 461.105, -1211.91, 631.511, -1334.37, 853.257, -1404.93, 1028.39, -1430.13, 1212.33, -1430.13, 1270.61, -1403.96, 1397.85, -1371.85, 1525.1, -1270.58, 1611.37, -1150.37, 1667.94, -1023.09, 1706.12, -880.253, 1710.36, -687.92, 1672.42, -532.133, 1617.69, -390.426, 1514.38, -251.835, 1382.2, -143.801, 1231.4, -39.0328, 1179.02, 11.7641, 1071.07, 56.2113, 939.318, 75.2601, 801.214, 122.882, 637.712, 151.455, 361.504, 172.092, 362.261, 162.024, 637.2, 139.549, 800.516, 111.081, 944.5, 64.6362, 1070.64, 46.6158, 1178.1, 0.563843, 1228.15, -48.1578, 1380, -155.157, 1508.7, -259.809, 1603.45, -395.574, 1662, -539, 1697, -696, 1697, -882, 1654.97, -1023.93, 1600.27, -1147.61, 1516.83, -1266.53, 1393.17, -1363.35, 1269.5, -1395.45, 877.059, -1390.7, 790.247, -1374.05, 674.894, -1340.75, 613.055, -1305.07, 550.027, -1261.07, 481.053, -1209.94, 434.674, -1151.67, 393.052, -1095.77, 370.457, -1023.23, 364.511, -950.691, 365.7, -860.311, 375.214, -754.472, 389.355, -719.544 )
+
+[node name="IceSlideCollision2" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( 516.488, -788.976, 516.043, -799.667, 536.088, -852.23, 560.588, -912.365, 602.5, -966.5, 649.274, -1007.35, 735.691, -1047.45, 835.472, -1066.15, 933.47, -1075.95, 1010.98, -1041.21, 1062.65, -1000.23, 1103.63, -923.61, 1139.27, -845.211, 1163.32, -757.012, 1176.69, -668.813, 1174, -609, 1104, -545, 1013.5, -463.825, 984.881, -439.693, 948, -417, 843, -345, 690, -271, 447, -189, 363, -167, 360, -180, 396, -199, 548, -246, 744, -320, 913, -411, 978.583, -455.577, 1037, -512, 1131, -596, 1147, -676, 1136.59, -771.87, 1113.81, -882.409, 1061.9, -978.82, 994.095, -1023.32, 929.914, -1050.74, 821.019, -1046.5, 720.61, -1021.04, 654.142, -982.152, 583.432, -917.805, 627.979, -893.056, 596.867, -870.429, 570.704, -884.571, 548.076, -832.245 )
+
+[node name="BridgeCollision1" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( 409.182, -596.909, 449.124, -612.045, 471.408, -635.59, 493.692, -659.976, 529.85, -678.476, 558.441, -691.089, 586.611, -711.271, 617.303, -737.338, 621.508, -733.554, 598.383, -714.634, 554.236, -676.794, 534.055, -672.169, 510.93, -662.919, 494.533, -650.306, 483.18, -638.113, 474.351, -626.34, 468.885, -615.408, 413.386, -589.341 )
+
+[node name="BridgeCollision2" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( 367.609, -699.249, 384.727, -709.351, 389.778, -710.754, 400.722, -714.963, 426.578, -728.284, 478.95, -757.068, 515.284, -775.047, 548.215, -798.658, 568.139, -818.021, 583.802, -830.201, 606.224, -849.051, 632.422, -877.347, 649.87, -888.909, 648.621, -897.171, 641.296, -898.705, 635.796, -895.286, 628.859, -892.125, 596.065, -868.58, 591.944, -862.285, 574.552, -844.596, 565.781, -838.204, 551.362, -830.325, 548.554, -830.319, 546.872, -833.262, 518.411, -787.908, 484.626, -766.597, 413.911, -728.994, 395.951, -720.295, 373.502, -719.453, 327.481, -692.234, 305.593, -675.116, 286.511, -664.453, 271.639, -653.228, 273.884, -649.019, 285.67, -650.703, 297.736, -654.631, 317.379, -668.101, 342.354, -684.096 )
+
+[node name="TunnelCollision1" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( 470.796, -606.253, 458.393, -598.475, 443.467, -590.696, 431.904, -588.384, 414.666, -588.174, 413.825, -589.645, 406.467, -587.964, 395.746, -579.344, 386.706, -569.043, 382.502, -573.879, 398.269, -588.594, 409.2, -595.952, 415.297, -590.486, 468.694, -615.293 )
+
+[node name="TunnelCollision2" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( 554.398, -676.706, 555.37, -674.143, 557.668, -671.315, 560.585, -671.226, 563.413, -674.231, 563.678, -675.999, 567.214, -678.12, 575.434, -683.689, 588.946, -696.147, 590.8, -699.59, 598.481, -714.555 )
+
+[node name="StandCollision" type="CollisionPolygon2D" parent="Concrete"]
+polygon = PoolVector2Array( -27.0835, 269.179, -26.4889, 188.907, 248.218, 188.313, 247.623, 269.179 )
+
+[node name="Tyre" type="StaticBody2D" parent="."]
+collision_layer = 8
+
+[node name="TyreCol1" type="CollisionPolygon2D" parent="Tyre"]
+polygon = PoolVector2Array( -882.014, -354.053, -856.316, -379.706, -755.5, -276, -650, -276.5, -651.409, -497.75, -610.428, -497.305, -611, -276, -277.191, -275.89, -277.965, -499.092, -237.706, -498.562, -235.188, -276.834, -69.6189, -274.897, -70.4822, -236.247, -767.309, -237.415 )
+
+[node name="TyreCol2" type="CollisionPolygon2D" parent="Tyre"]
+polygon = PoolVector2Array( -856.313, -514.441, -831.145, -488.827, -648.035, -671.946, -464.43, -671.764, -463.648, -450.284, -424.126, -450.284, -424.456, -672.048, -91.8434, -672.69, -90.6708, -450.94, -51.4836, -450.694, -50.2164, -712.395, -660.329, -710.075 )
+
+[node name="Ice" type="Node2D" parent="."]
+script = ExtResource( 5 )
+
+[node name="ice_0" type="Area2D" parent="Ice" groups=[
+"Ice Areas",
+]]
+collision_layer = 16
+script = ExtResource( 4 )
+
+[node name="IceRink" type="CollisionPolygon2D" parent="Ice/ice_0"]
+polygon = PoolVector2Array( 363.13, -162.141, 705.157, -276.414, 950.879, -420.251, 1043.77, -489.173, 1171.13, -606.041, 1178, -673, 1164, -768, 1126, -886, 1063.89, -1001.05, 1011, -1043, 932, -1078, 829, -1065, 732, -1048, 653, -1012, 576, -939, 555, -898, 523, -832, 514, -790, 393, -720, 372, -766, 367, -863, 368, -993, 403.581, -1116.48, 482.625, -1212.35, 650.896, -1326.51, 817.385, -1381.21, 941.063, -1395.48, 1162.26, -1390.73, 1326.37, -1388.35, 1419.12, -1352.67, 1549.94, -1226.62, 1623.67, -1107.69, 1673.61, -962.612, 1702.16, -872.232, 1695.02, -746.176, 1692.64, -667.688, 1654.59, -510.713, 1602.26, -387.035, 1521.4, -287.142, 1508.81, -260.992, 1427.84, -195.336, 1323.43, -117.292, 1228.65, -50.8474, 1179.99, -5.0141, 1066.12, 42.9317, 949.251, 60.9114, 800.635, 112.049, 637.32, 136.022, 360.133, 161.493 )
+one_way_collision_margin = 0.0
+
+[node name="Object" type="StaticBody2D" parent="."]
+collision_layer = 32
+
+[node name="Ramp" type="CollisionPolygon2D" parent="Object"]
+polygon = PoolVector2Array( -1159.24, -250.795, -1161.69, -253.914, -1166.81, -283.313, -1163.92, -286.431, -1133.18, -286.654, -1130.29, -283.536, -1134.52, -254.359, -1136.74, -250.795 )
+
+[node name="Levels" type="Node2D" parent="."]
+
+[node name="-1" type="Area2D" parent="Levels" groups=[
+"Checkpoints",
+]]
+position = Vector2( -1435.81, -1683.85 )
+rotation = -3.14159
+
+[node name="col_-L" type="CollisionShape2D" parent="Levels/-1"]
+position = Vector2( -1015.13, -3226.9 )
+rotation = -3.14159
+shape = SubResource( 1 )
+
+[node name="col_-R" type="CollisionShape2D" parent="Levels/-1"]
+position = Vector2( -2121.02, -1105.88 )
+rotation = 1.5708
+shape = SubResource( 2 )
+
+[node name="+1" type="Area2D" parent="Levels" groups=[
+"Checkpoints",
+]]
+position = Vector2( -1559.83, -124.016 )
+rotation = 1.5708
+
+[node name="col_+1" type="CollisionShape2D" parent="Levels/+1"]
+position = Vector2( -534.219, -2121.81 )
+rotation = 1.5708
+shape = SubResource( 3 )
+
+[node name="Checkpoints" type="Node2D" parent="."]
+script = ExtResource( 2 )
+
+[node name="cp_4" type="Area2D" parent="Checkpoints" groups=[
+"Checkpoints",
+]]
+position = Vector2( -1559.83, -124.016 )
+rotation = 1.5708
+script = ExtResource( 3 )
+
+[node name="col_4" type="CollisionShape2D" parent="Checkpoints/cp_4"]
+shape = SubResource( 4 )
+
+[node name="cp_3" type="Area2D" parent="Checkpoints" groups=[
+"Checkpoints",
+]]
+script = ExtResource( 3 )
+
+[node name="col_3" type="CollisionShape2D" parent="Checkpoints/cp_3"]
+position = Vector2( -854.603, -381.691 )
+shape = SubResource( 5 )
+
+[node name="cp_2" type="Area2D" parent="Checkpoints" groups=[
+"Checkpoints",
+]]
+script = ExtResource( 3 )
+
+[node name="col_2" type="CollisionShape2D" parent="Checkpoints/cp_2"]
+position = Vector2( -293.039, -225.608 )
+shape = SubResource( 6 )
+
+[node name="cp_1" type="Area2D" parent="Checkpoints" groups=[
+"Checkpoints",
+]]
+script = ExtResource( 3 )
+
+[node name="col_1" type="CollisionShape2D" parent="Checkpoints/cp_1"]
+position = Vector2( -1195.26, 57.5862 )
+shape = SubResource( 7 )
+
+[node name="cp_0" type="Area2D" parent="Checkpoints" groups=[
+"Checkpoints",
+]]
+script = ExtResource( 3 )
+
+[node name="col_0" type="CollisionShape2D" parent="Checkpoints/cp_0"]
+position = Vector2( -59.6784, -24.8489 )
+shape = SubResource( 8 )

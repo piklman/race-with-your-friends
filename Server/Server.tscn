@@ -23,3 +23,5 @@ margin_bottom = 310.0
 text = "Start Game"
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[connection signal="pressed" from="CenterContainer/StartGame" to="." method="_on_StartGame_pressed"]

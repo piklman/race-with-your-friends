@@ -1,0 +1,137 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Scripts/Menus/main_menu.gd" type="Script" id=1]
+
+[node name="MainMenu" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="MenuContainer" type="HBoxContainer" parent="."]
+margin_left = 56.0
+margin_top = 329.0
+margin_right = 1873.0
+margin_bottom = 1081.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OnlineButton" type="Button" parent="MenuContainer"]
+margin_right = 500.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 500, 500 )
+rect_pivot_offset = Vector2( -617.077, -318.351 )
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="OnlineLabel" type="Label" parent="MenuContainer/OnlineButton"]
+margin_left = 12.0
+margin_top = 19.0
+margin_right = 170.0
+margin_bottom = 174.0
+rect_scale = Vector2( 3, 3 )
+size_flags_horizontal = 2
+size_flags_vertical = 2
+text = "Race Online"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OfflineButton" type="Button" parent="MenuContainer"]
+margin_left = 658.0
+margin_right = 1158.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 500, 500 )
+size_flags_horizontal = 2
+size_flags_vertical = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OfflineLabel" type="Label" parent="MenuContainer/OfflineButton"]
+margin_left = 12.0
+margin_top = 19.0
+margin_right = 170.0
+margin_bottom = 176.0
+rect_scale = Vector2( 3, 3 )
+size_flags_horizontal = 2
+size_flags_vertical = 2
+text = "Race Offline"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatsButton" type="Button" parent="MenuContainer"]
+margin_left = 1317.0
+margin_right = 1817.0
+margin_bottom = 500.0
+rect_min_size = Vector2( 500, 500 )
+size_flags_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StatsLabel" type="Label" parent="MenuContainer/StatsButton"]
+margin_left = 12.0
+margin_top = 19.0
+margin_right = 170.0
+margin_bottom = 175.0
+rect_scale = Vector2( 3, 3 )
+size_flags_horizontal = 2
+size_flags_vertical = 2
+text = "Vehicles and Stats"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SettingsButton" type="Button" parent="."]
+margin_left = 1667.3
+margin_top = 7.32835
+margin_right = 1790.3
+margin_bottom = 54.3283
+rect_scale = Vector2( 2, 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SettingsLabel" type="Label" parent="SettingsButton"]
+margin_left = 9.4292
+margin_top = 2.82843
+margin_right = 70.4292
+margin_bottom = 26.8284
+rect_scale = Vector2( 1.75, 1.75 )
+text = "Settings"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BackButton" type="Button" parent="."]
+margin_left = 6.7392
+margin_top = 6.80214
+margin_right = 129.739
+margin_bottom = 53.8021
+rect_scale = Vector2( 2, 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BackLabel" type="Label" parent="BackButton"]
+margin_left = 9.4292
+margin_top = 2.82843
+margin_right = 70.4292
+margin_bottom = 26.8284
+rect_scale = Vector2( 1.75, 1.75 )
+text = "Back"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
