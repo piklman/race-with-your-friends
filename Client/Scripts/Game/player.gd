@@ -28,9 +28,10 @@ onready var friction_value = get_node("../../Canvas/Stats/Physics/Friction")
 onready var GLOBALS = get_node("../../GLOBALS")
 
 # Base friction stat for all vehicles (decreases with offroad)
+var moving = false
 var friction
-var std_friction = 1
-var ice_friction = 0.2
+var std_friction = 0.8
+var ice_friction = 0.4
 
 # Text
 export (Color, RGB) var DEBUG_DEFAULT
@@ -58,6 +59,21 @@ func _ready():
 	velocity = Vector2.ZERO
 
 
+func _find_vector_angle(v1, v2):
+	if v1 != Vector2.ZERO and v2 != Vector2.ZERO:
+		# Cosine rule. Gives result in rads
+		var angle = acos(v1.dot(v2) / (v1.length() * v2.length()))
+		return angle
+	return 0 # If a /0 error would occur, return 0
+
+
+func _find_vector_direction(v1, v2):
+	var direction = 1
+	if abs(_find_vector_angle(v1, v2)) >= PI/4:
+		direction = -1
+	return direction
+
+
 func _process(delta):
 	if Global.PLAYER_ON_ICE:
 		friction = ice_friction
@@ -73,7 +89,7 @@ func _physics_process(delta):
 			velocity *= -Global.e
 		
 		_handle_input()
-		_handle_friction()
+		if moving == false: _handle_friction()
 
 
 var debug_setup = false
@@ -110,7 +126,7 @@ func _handle_debug():
 	elif position != Vector2.ZERO:
 		pos_value.text = "(" + str(stepify(position.x, 0.1)) + ", " + str(stepify(position.y, 0.1)) + ")"
 		
-	spd_value.text = "(" + str(stepify(velocity.x, 0.1)) + ", " + str(stepify(velocity.y, 0.1)) + ")"
+	spd_value.text = str(velocity.length())
 	
 	if spd_0er.pressed:
 		velocity = Vector2.ZERO
@@ -141,17 +157,40 @@ func _handle_debug():
 	
 	# friction
 	friction_value.text = "Friction: " + str(friction)
+	
+	# timer
+	
 
 
-func _accelerate(acc, spd):
-	if velocity.length() + acc < spd:
+func _accelerate(acc, max_spd):
+	var direction = _find_vector_direction(velocity, transform.x)
+	if acc > 0 and direction * velocity.length() + acc < max_spd:
+		velocity += acc * transform.x
+	elif acc < 0 and direction * velocity.length() - acc > -max_spd:
 		velocity += acc * transform.x
 	else:
-		velocity = sign(acc) * spd * transform.x
+		velocity = velocity.normalized() * max_spd
 
 
 func _turn(dir, hdl):
-	rotation_degrees += dir * hdl
+	# d1
+	var previous_forward_vector = transform.x
+	
+	rotation_degrees += dir * hdl * (velocity.length() / (200 + stats["SPD"] * 40))
+	
+	# d2
+	var new_forward_vector = transform.x
+	
+	# Align the car's velocity with the direction it is now facing.
+	# d1->d2 = d2 - d1
+	var forward_vector_traversal = new_forward_vector - previous_forward_vector
+	
+	# Add the vector traversal for direction to velocity, multiplied by the magnitude of velocity
+	# We also need to consider forward and reverse motion: for forward, traversal is added,
+	# and for reverse, traversal is subtracted.
+	# (As transform.x is a unit vector)
+	var direction = _find_vector_direction(velocity, previous_forward_vector)
+	velocity += direction * forward_vector_traversal * velocity.length()
 
 
 func _handle_input():
@@ -159,26 +198,39 @@ func _handle_input():
 	
 	# Movement
 	if Input.is_action_pressed("forward"):
-		_accelerate(stats["ACC"] * 1, stats["SPD"] * 100)
+		moving = true
+		_accelerate(stats["ACC"] * 1, (200 + stats["SPD"] * 40))
+	
+	if Input.is_action_just_released("forward"):
+		moving = false
 		
 	if Input.is_action_pressed("reverse"):
-		_accelerate(-stats["ACC"] * 1, stats["SPD"] * 100)
-		
-	# !
+		moving = true
+		_accelerate(-stats["ACC"] * 1, (200 + stats["SPD"] * 40))
+	
+	if Input.is_action_just_released("reverse"):
+		moving = false
+	
+	# Turning	
 	if Input.is_action_pressed("left"):
 		_turn(-1, stats["HDL"])
 		
 	if Input.is_action_pressed("right"):
 		_turn(1, stats["HDL"])
-		
+	
+	
 	if Input.is_action_just_pressed("teleport"):
 		global_position = get_global_mouse_position()
 
 
 func _handle_friction():
+	var fraction_of_max_spd = velocity.length() / (200 + stats["SPD"] * 40)
 	var vel_dir = velocity.normalized()
 	
-	if (velocity - friction * vel_dir).length() < friction:
+	# Friction has a minimum value (friction) and increases with speed 
+	var final_friction = (friction + fraction_of_max_spd)
+	
+	if (velocity - vel_dir * final_friction).length() < final_friction:
 		velocity = Vector2.ZERO
 	else:
-		velocity -= friction * vel_dir
+		velocity -= vel_dir * final_friction

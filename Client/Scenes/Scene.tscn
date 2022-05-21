@@ -2,9 +2,11 @@
 
 [node name="Scene" type="Node2D"]
 
-[node name="Maps" type="Node2D" parent="."]
+[node name="Background" type="Node2D" parent="."]
 
 [node name="Players" type="Node2D" parent="."]
+
+[node name="Foreground" type="Node2D" parent="."]
 
 [node name="Cameras" type="Node2D" parent="."]
 
@@ -106,7 +108,7 @@ margin_left = 5.52972
 margin_top = 52.0
 margin_right = 130.53
 margin_bottom = 92.0
-max_value = 1000.0
+max_value = 5.0
 value = 5.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -146,8 +148,7 @@ margin_left = 6.05948
 margin_top = 85.7621
 margin_right = 131.059
 margin_bottom = 125.762
-step = 0.2
-value = 0.4
+max_value = 5.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -185,9 +186,8 @@ margin_left = 5.52971
 margin_top = 121.227
 margin_right = 130.53
 margin_bottom = 161.227
-max_value = 10.0
-step = 0.2
-value = 0.6
+max_value = 5.0
+value = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -225,7 +225,7 @@ margin_left = 6.47194
 margin_top = 156.38
 margin_right = 131.472
 margin_bottom = 196.38
-max_value = 2.5
+max_value = 1.0
 step = 0.05
 value = 0.1
 __meta__ = {
@@ -310,6 +310,23 @@ margin_top = 243.563
 margin_right = 81.7766
 margin_bottom = 257.563
 text = "Checkpoint:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="StageHeight" type="Label" parent="Canvas/Race"]
+margin_left = 8.48631
+margin_top = 307.727
+margin_right = 54.4863
+margin_bottom = 321.727
+text = "Height:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Label" parent="Canvas/Race"]
+margin_right = 40.0
+margin_bottom = 14.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

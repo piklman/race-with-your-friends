@@ -261,7 +261,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="limo" type="Sprite" parent="GridContainer/Button23"]
+[node name="short_limo" type="Sprite" parent="GridContainer/Button23"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 3 )
 script = ExtResource( 10 )

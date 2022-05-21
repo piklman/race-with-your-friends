@@ -79,6 +79,7 @@ remote func update_vehicle(player_id, vehicle):
 remote func load_character_select():
 	char_select = true # Tell the game to load the char select screen.
 	var c_select = load("res://Scenes/CharSelect.tscn").instance()
+	# !
 
 
 func _upload_vehicle():
@@ -92,8 +93,8 @@ func _pre_config():
 	get_node("/root").add_child(scene)
 	
 	# Load the Map
-	map = preload("res://Scenes/Maps/The Scorpion Map.tscn").instance()
-	var maps = get_node("/root/Scene/Maps")
+	map = load("res://Scenes/Maps/Scorpion/ScorpionMap.tscn").instance()
+	var maps = get_node("/root/Scene/Background")
 	maps.add_child(map)
 	checkpoints = map.get_node("Checkpoints")
 	total_checkpoints = checkpoints.get_child_count()

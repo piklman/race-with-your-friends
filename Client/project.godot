@@ -8,100 +8,20 @@
 
 config_version=4
 
-_global_script_classes=[ {
-"base": "",
-"class": "SteamAPI",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_api.gdns"
-}, {
-"base": "",
-"class": "SteamCallback",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_callback.gdns"
-}, {
-"base": "",
-"class": "SteamFriends",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_friends.gdns"
-}, {
-"base": "Node",
-"class": "SteamI",
-"language": "GDScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_i.gd"
-}, {
-"base": "",
-"class": "SteamId",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_id.gdns"
-}, {
-"base": "",
-"class": "SteamLeaderboard",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_leaderboard.gdns"
-}, {
-"base": "",
-"class": "SteamLeaderboardEntries",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_leaderboard_entries.gdns"
-}, {
-"base": "",
-"class": "SteamLeaderboardEntry",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_leaderboard_entry.gdns"
-}, {
-"base": "",
-"class": "SteamLeaderboardFindResult",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_find_leaderboard_result.gdns"
-}, {
-"base": "",
-"class": "SteamLeaderboardScoreUploaded",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_leaderboard_uploaded.gdns"
-}, {
-"base": "",
-"class": "SteamLeaderboardScoresDownloaded",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_leaderboard_scores_downloaded.gdns"
-}, {
-"base": "",
-"class": "SteamUserStats",
-"language": "NativeScript",
-"path": "res://godot-steam-api-35f57c87b858a7a7ac9a34eb376b574d5d958098/addons/steam_api/steam_user_stats.gdns"
-} ]
-_global_script_class_icons={
-"SteamAPI": "",
-"SteamCallback": "",
-"SteamFriends": "",
-"SteamI": "",
-"SteamId": "",
-"SteamLeaderboard": "",
-"SteamLeaderboardEntries": "",
-"SteamLeaderboardEntry": "",
-"SteamLeaderboardFindResult": "",
-"SteamLeaderboardScoreUploaded": "",
-"SteamLeaderboardScoresDownloaded": "",
-"SteamUserStats": ""
-}
-
 [application]
 
 config/name="Race with your friends: Client"
-run/main_scene="res://Scenes/TitleScreen.tscn"
+run/main_scene="res://Scenes/SteamLobby.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
 Server="*res://Scripts/Game/server.gd"
-Global="*res://Scripts/Game/GLOBAL.gd"
+Global="*res://Scripts/Game/globals.gd"
+SteamGlobals="*res://Scripts/Steam/steam_globals.gd"
 
 [display]
 
-window/size/width=1920
-window/size/height=1080
-window/size/resizable=false
-window/size/test_width=1920
-window/size/test_height=1080
 window/snapping/use_gpu_pixel_snap=false
 
 [global]
@@ -135,32 +55,32 @@ texture={
 
 forward={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":87,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":87,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 brake={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":32,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":32,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 left={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":65,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":65,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 reverse={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":83,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":83,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 right={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":68,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":68,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 teleport={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":84,"unicode":0,"echo":false,"script":null)
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":84,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 
