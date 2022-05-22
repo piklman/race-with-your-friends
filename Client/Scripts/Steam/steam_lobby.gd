@@ -341,6 +341,9 @@ func _on_Lobby_Joined(lobbyID, perms, locked, response) -> void:
 		
 		# Get lobby members
 		get_Lobby_Members()
+		
+		# Make the initial handshake
+		make_P2P_Handshake()
 	
 	# Failure
 	else:
