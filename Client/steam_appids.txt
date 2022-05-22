@@ -1,0 +1,3 @@
+Actual: 1999720
+Playtest: 2011250
+Debug: 480

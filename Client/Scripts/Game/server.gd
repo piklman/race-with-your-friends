@@ -20,7 +20,7 @@ var ready = false
 
 var map = null
 var checkpoints = null
-var total_checkpoints = 0
+var SteamGlobals.NUM_CHECKPOINTS = 0
 
 var my_player = null
 var my_vehicle = null
@@ -97,7 +97,7 @@ func _pre_config():
 	var maps = get_node("/root/Scene/Background")
 	maps.add_child(map)
 	checkpoints = map.get_node("Checkpoints")
-	total_checkpoints = checkpoints.get_child_count()
+	SteamGlobals.NUM_CHECKPOINTS = checkpoints.get_child_count()
 	
 	# Load my Player and Camera
 	print(my_vehicle)

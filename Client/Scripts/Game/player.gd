@@ -37,18 +37,18 @@ var ice_friction = 0.4
 export (Color, RGB) var DEBUG_DEFAULT
 export (Color, RGB) var DEBUG_WARN
 
-var stats
-var velocity
+var my_data: Dictionary
+var stats: Dictionary
+var velocity: Vector2
 
-func _ready():
-	# UI
-	$CenterContainer/ID.text = name
-	
+func _ready():	
 	# Variable definition
 	friction = std_friction
 	
-	# Get selected vehicle stats
-	stats = Global.VEHICLE_BASE_STATS[Global.SELECTED_VEHICLE]
+	# Get player data
+	my_data = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]
+	stats = Global.VEHICLE_BASE_STATS[my_data["vehicle"]]
+	$CenterContainer/ID.text = my_data["steam_name"]
 	
 	# When moving a kinematic body, you should not set its position directly.
 	# Instead, you use the move_and_collide() or move_and_slide() methods.
@@ -83,7 +83,7 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	if int(name) == Server.local_player_id:
+	if int(name) == SteamGlobals.STEAM_ID:
 		var collision_info = move_and_collide(velocity * delta)
 		if collision_info:
 			velocity *= -Global.e

@@ -11,14 +11,13 @@ config_version=4
 [application]
 
 config/name="Race with your friends: Client"
-run/main_scene="res://Scenes/SteamLobby.tscn"
+run/main_scene="res://Scenes/TitleScreen.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-Server="*res://Scripts/Game/server.gd"
 Global="*res://Scripts/Game/globals.gd"
-SteamGlobals="*res://Scripts/Steam/steam_globals.gd"
+SteamGlobals="*res://Scripts/Steam/steam_global.gd"
 
 [display]
 

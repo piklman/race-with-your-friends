@@ -6,13 +6,11 @@ var scene_loaded = false
 func _process(delta):
 	if !scene_loaded:
 		if $OnlineButton.pressed:
-			Server.active = true
-			var lobby = load("res://Scenes/Lobby.tscn").instance()
+			var lobby = load("res://Scenes/SteamLobby.tscn").instance()
 			get_node("/root").add_child(lobby)
 			scene_loaded = true
 			self.queue_free()
 		elif $OfflineButton.pressed:
-			Server.active = false
 			var char_select = load("res://Scenes/CharSelect.tscn").instance()
 			get_node("/root").add_child(char_select)
 			scene_loaded = true

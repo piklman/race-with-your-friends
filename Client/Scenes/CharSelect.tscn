@@ -11,24 +11,30 @@
 [ext_resource path="res://Scripts/Menus/vehicle_selection_menu.gd" type="Script" id=9]
 [ext_resource path="res://Scripts/Menus/vehicle_selection_icon.gd" type="Script" id=10]
 
-[node name="CharSelect" type="CanvasLayer"]
+[node name="CharSelect" type="Node2D"]
 
-[node name="GridContainer" type="GridContainer" parent="."]
+[node name="Panel" type="Panel" parent="."]
+margin_right = 1023.0
+margin_bottom = 598.0
+
+[node name="Label" type="Label" parent="Panel"]
+margin_right = 1023.0
+margin_bottom = 38.0
+text = "Vehicle Selection
+"
+align = 1
+valign = 1
+
+[node name="GridContainer" type="GridContainer" parent="Panel"]
 anchor_top = -0.00235697
 anchor_bottom = -0.00235697
-margin_left = 3.70117
-margin_top = 84.788
-margin_right = 947.701
-margin_bottom = 704.788
+margin_top = 21.4095
+margin_right = 516.0
+margin_bottom = 641.409
 columns = 5
 script = ExtResource( 9 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Button" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_right = 100.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 100, 100 )
@@ -37,76 +43,62 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="mini_car" type="Sprite" parent="GridContainer/Button"]
+[node name="mini_car" type="Sprite" parent="Panel/GridContainer/Button"]
 position = Vector2( 50, 50 )
 scale = Vector2( 5, 5 )
 texture = ExtResource( 7 )
 script = ExtResource( 10 )
 
-[node name="Button2" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button2" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 104.0
 margin_right = 204.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 100, 100 )
 script = ExtResource( 8 )
 
-[node name="cunt_car" type="Sprite" parent="GridContainer/Button2"]
+[node name="cunt_car" type="Sprite" parent="Panel/GridContainer/Button2"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 1 )
 script = ExtResource( 10 )
 
-[node name="Button3" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button3" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 208.0
 margin_right = 308.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 100, 100 )
 script = ExtResource( 8 )
 
-[node name="dankamobil" type="Sprite" parent="GridContainer/Button3"]
+[node name="dankamobil" type="Sprite" parent="Panel/GridContainer/Button3"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 2 )
 script = ExtResource( 10 )
 
-[node name="Button4" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button4" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 312.0
 margin_right = 412.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button5" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button5" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 416.0
 margin_right = 516.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button6" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button6" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_top = 104.0
 margin_right = 100.0
 margin_bottom = 204.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button7" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button7" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 104.0
 margin_top = 104.0
 margin_right = 204.0
 margin_bottom = 204.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button8" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button8" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 208.0
 margin_top = 104.0
 margin_right = 308.0
@@ -116,9 +108,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button9" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button9" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 312.0
 margin_top = 104.0
 margin_right = 412.0
@@ -128,129 +118,101 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button10" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button10" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 416.0
 margin_top = 104.0
 margin_right = 516.0
 margin_bottom = 204.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button11" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button11" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_top = 208.0
 margin_right = 100.0
 margin_bottom = 308.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button12" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button12" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 104.0
 margin_top = 208.0
 margin_right = 204.0
 margin_bottom = 308.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button13" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button13" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 208.0
 margin_top = 208.0
 margin_right = 308.0
 margin_bottom = 308.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button14" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button14" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 312.0
 margin_top = 208.0
 margin_right = 412.0
 margin_bottom = 308.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button15" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button15" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 416.0
 margin_top = 208.0
 margin_right = 516.0
 margin_bottom = 308.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button16" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button16" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_top = 312.0
 margin_right = 100.0
 margin_bottom = 412.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button17" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button17" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 104.0
 margin_top = 312.0
 margin_right = 204.0
 margin_bottom = 412.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button18" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button18" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 208.0
 margin_top = 312.0
 margin_right = 308.0
 margin_bottom = 412.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button19" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button19" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 312.0
 margin_top = 312.0
 margin_right = 412.0
 margin_bottom = 412.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button20" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button20" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 416.0
 margin_top = 312.0
 margin_right = 516.0
 margin_bottom = 412.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button21" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button21" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_top = 416.0
 margin_right = 100.0
 margin_bottom = 516.0
 rect_min_size = Vector2( 100, 100 )
 script = ExtResource( 8 )
 
-[node name="cock" type="Sprite" parent="GridContainer/Button21"]
+[node name="cock" type="Sprite" parent="Panel/GridContainer/Button21"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 4 )
 script = ExtResource( 10 )
 
-[node name="Button22" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button22" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 104.0
 margin_top = 416.0
 margin_right = 204.0
 margin_bottom = 516.0
 rect_min_size = Vector2( 100, 100 )
 
-[node name="Button23" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button23" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 208.0
 margin_top = 416.0
 margin_right = 308.0
@@ -261,14 +223,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="short_limo" type="Sprite" parent="GridContainer/Button23"]
+[node name="short_limo" type="Sprite" parent="Panel/GridContainer/Button23"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 3 )
 script = ExtResource( 10 )
 
-[node name="Button24" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button24" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 312.0
 margin_top = 416.0
 margin_right = 412.0
@@ -279,14 +239,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="long_limo" type="Sprite" parent="GridContainer/Button24"]
+[node name="long_limo" type="Sprite" parent="Panel/GridContainer/Button24"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 5 )
 script = ExtResource( 10 )
 
-[node name="Button25" type="Button" parent="GridContainer" groups=[
-"VehicleSelectionButtons",
-]]
+[node name="Button25" type="Button" parent="Panel/GridContainer" groups=["VehicleSelectionButtons"]]
 margin_left = 416.0
 margin_top = 416.0
 margin_right = 516.0
@@ -294,7 +252,7 @@ margin_bottom = 516.0
 rect_min_size = Vector2( 100, 100 )
 script = ExtResource( 8 )
 
-[node name="jcl" type="Sprite" parent="GridContainer/Button25"]
+[node name="jcl" type="Sprite" parent="Panel/GridContainer/Button25"]
 position = Vector2( 50, 50 )
 texture = ExtResource( 6 )
 script = ExtResource( 10 )

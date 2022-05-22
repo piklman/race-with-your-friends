@@ -24,4 +24,4 @@ func _input(event):
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	# maybe need to check if id == 1?
-	position = get_node("../../Players/{id}".format({"id": Server.local_player_id})).position
+	position = get_node("../../Players/{id}".format({"id": SteamGlobals.STEAM_ID})).position

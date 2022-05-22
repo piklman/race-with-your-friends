@@ -29,9 +29,6 @@ size_flags_vertical = 2
 text = "Race Online"
 align = 1
 valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="OfflineButton" type="Button" parent="."]
 margin_left = 88.8264

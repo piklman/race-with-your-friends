@@ -1,9 +1,9 @@
-# Credit: https://www.youtube.com/watch?v=si50G3S1XGU&ab_channel=DawnsCrowGames
 extends Node
 
 
 enum lobby_status {Private, Friends, Public, Invisible}
 enum search_distance {Close, Default, Far, Worldwide}
+enum send_type {Unreliable, UnreliableNoDelay, Reliable, ReliableNoDelay}
 
 
 onready var steamName = $SteamName
@@ -16,6 +16,13 @@ onready var playerCount = $Players/NoOfPlayers
 onready var playerList = $Players/PlayerList
 onready var chatInput = $Message/TextEdit
 
+onready var charSelectPopup = $CharSelectPopup
+onready var openCharSelect = $OpenCharSelect
+onready var closeCharSelect = $CharSelectPopup/Close
+
+var map: Node2D
+var checkpoints: Node2D
+
 
 func _ready():
 	# Set steam name on screen
@@ -24,26 +31,34 @@ func _ready():
 	# Steamwork Connections
 	Steam.connect("lobby_created", self, "_on_Lobby_Created")
 	Steam.connect("lobby_match_list", self, "_on_Lobby_Match_List")
-	Steam.connect("lobby_joined", self, "_on_Lobbby_Joined")
+	Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
 	Steam.connect("lobby_chat_update", self, "_on_Lobby_Chat_Update")
 	Steam.connect("lobby_message", self, "_on_Lobby_Message")
 	Steam.connect("lobby_data_update", self, "_on_Lobby_Data_Update")
+	Steam.connect("lobby_invite", self, "_on_Lobby_Invite")
 	Steam.connect("join_requested", self, "_on_Lobby_Join_Requested")
+	Steam.connect("persona_state_change", self, "_on_Persona_Change")
+	Steam.connect("p2p_session_request", self, "_on_P2P_Session_Request")
+	Steam.connect("p2p_session_connect_fail", self, "_on_P2P_Session_Connect_Fail")
 	
 	#Check for command-line arguments
 	check_Command_Line()
 
 
+func _process(delta):
+	read_P2P_Packet()
+
+
 ## Self-Made Functions
 
 
-func create_Lobby():
+func create_Lobby() -> void:
 	# Check no other lobbies are running
 	if SteamGlobals.LOBBY_ID == 0:
 		Steam.createLobby(lobby_status.Public, SteamGlobals.MAX_MEMBERS)
 
 
-func join_Lobby(lobbyID):
+func join_Lobby(lobbyID) -> void:
 	lobbyPopup.hide()
 	
 	# Gets value of the "name" key with provided lobbyID
@@ -54,10 +69,10 @@ func join_Lobby(lobbyID):
 	SteamGlobals.LOBBY_MEMBERS.clear()
 	
 	# Steam join request
-	Steam.joinLobby(lobbyID)	
+	Steam.joinLobby(lobbyID)
 
 
-func get_Lobby_Members():
+func get_Lobby_Members() -> void:
 	# Clear prev. lobby members list
 	SteamGlobals.LOBBY_MEMBERS.clear()
 	
@@ -76,24 +91,215 @@ func get_Lobby_Members():
 		add_Player_List(MEMBER_STEAM_ID, MEMBER_STEAM_NAME)
 
 
-func add_Player_List(steam_id, steam_name):
+func add_Player_List(steam_id, steam_name) -> void:
 	# Add players to list
 	SteamGlobals.LOBBY_MEMBERS.append({"steam_id" : steam_id, "steam_name" : steam_name})
 	# Ensure list is cleared
 	playerList.clear()
+	
+	var vehicle = " "
+	
 	# Populate player list
 	for MEMBER in SteamGlobals.LOBBY_MEMBERS:
-		playerList.add_text(str(MEMBER['steam_name']) + "\n")
+		
+		var text = str(MEMBER["steam_name"])
+		
+		# Establish player state
+		if SteamGlobals.PLAYER_DATA.has(MEMBER["steam_id"]):
+			if SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]].has("vehicle"):
+				text += " [" + SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]]["vehicle"] + "]"
+			if SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]].has("ready"):
+				var ready = SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]]["ready"]
+				if ready:
+					text += " [READY]"
+		else:
+			SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]] = {"steam_name": MEMBER["steam_name"]}
+			
+		playerList.add_text(text + "\n")
 
 
-func display_Message(message):
+func send_Chat_Message() -> void:
+	# Get chat input
+	var MESSAGE = chatInput.text
+	
+	# If the message is non-empty
+	if MESSAGE.length() > 0:
+		# Pass message to Steam
+		var SENT: bool = Steam.sendLobbyChatMsg(SteamGlobals.LOBBY_ID, MESSAGE)
+		
+		# Check message sent
+		if not SENT:
+			display_Message("ERROR: Chat message failed to send.")
+	
+	# Clear chat input
+	chatInput.text = ""
+
+
+func make_P2P_Handshake() -> void:
+	# Sends a P2P handshake to the lobby
+	send_P2P_Packet("all", {"message": "handshake", "from": SteamGlobals.STEAM_ID})
+
+
+func read_P2P_Packet():
+	var PACKET_SIZE: int = Steam.getAvailableP2PPacketSize(0)
+	var CHANNEL: int = 0
+	
+	# If there is a packet
+	if PACKET_SIZE > 0:
+		var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, CHANNEL)
+		
+		if PACKET.empty():
+			print("WARNING: Empty packet was read!")
+		
+		# Get the remote user's ID
+		var PACKET_ID: String = str(PACKET.steamIDRemote)
+		
+		# Make the packet readable
+		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+		
+		# Print the packet to output
+		print("Packet: " + str(READABLE))
+		
+		# Deal with packet data below
+		
+		# a "ready" packet. Can assume a steam_id will be provided
+		# Note: It is up to the final readier to send an "all_ready" packet.
+		if READABLE.has("ready"):
+			SteamGlobals.PLAYER_DATA[READABLE["steam_id"]]["ready"] = READABLE["ready"]
+		
+		# an "all_ready" packet.
+		if READABLE.has("all_ready"):
+			SteamGlobals.PLAYER_DATA["all_ready"] = READABLE["all_ready"]
+			if READABLE["all_ready"]:
+				_on_All_Ready()
+		
+		# a "pre_config_complete" packet. Can assume a steam_id will be provided
+		# Note: It is up to the final readier to send an "all_pre_config_complete" packet.
+		if READABLE.has("pre_config_complete") and READABLE.has("steam_id"):
+			SteamGlobals.PLAYER_DATA[READABLE["steam_id"]]["pre_config_complete"] = READABLE["pre_confg_complete"]
+		
+		# an "all_pre_config_complete" packet.
+		if READABLE.has("all_pre_config_complete"):
+			SteamGlobals.PLAYER_DATA["all_pre_config_complete"] = READABLE["all_pre_config_complete"]
+			if READABLE["all_pre_config_complete"]:
+				_on_All_Pre_Configs_Complete()
+
+
+func send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
+	# Assign send_type and channel
+	var SEND_TYPE: int = send_type.Reliable
+	var CHANNEL: int = 0
+	
+	# Create a data array to send the data through
+	var DATA: PoolByteArray
+	DATA.append_array(var2bytes(packet_data))
+
+	# If sending a packet to everyone
+	if target == "all":
+		# If there is more than one user, send packets
+		if SteamGlobals.LOBBY_MEMBERS.size() > 1:
+			# Loop through all members that aren't you
+			for MEMBER in SteamGlobals.LOBBY_MEMBERS:
+				if MEMBER['steam_id'] != SteamGlobals.STEAM_ID:
+					Steam.sendP2PPacket(MEMBER['steam_id'], DATA, SEND_TYPE, CHANNEL)
+
+	# Else sending it to someone specific
+	else:
+		Steam.sendP2PPacket(int(target), DATA, SEND_TYPE, CHANNEL)
+
+
+func leave_Lobby() -> void:
+	# If we are in a lobby, leave it.
+	if SteamGlobals.LOBBY_ID != 0:
+		display_Message("Leaving lobby...")
+		# Send leave request
+		Steam.leaveLobby(SteamGlobals.LOBBY_ID)
+		# Wipe Lobby ID (to show we aren't in a lobby anymore)
+		SteamGlobals.LOBBY_ID = 0
+		
+		lobbyGetName.text = "Lobby Name"
+		playerCount.text = "Players (0)"
+		playerList.clear()
+		
+		# Close any possible sessions with other users
+		for MEMBERS in SteamGlobals.LOBBY_MEMBERS:
+			Steam.closeP2PSessionWithUser(MEMBERS["steam_id"])
+		
+		# Clear lobby list
+		SteamGlobals.LOBBY_MEMBERS.clear()
+
+
+func display_Message(message) -> void:
 	# Adds a new message to the chat box.
 	lobbyOutput.add_text("\n" + str(message))
+
+
+func start_Pre_Config() -> void:
+	var all_pre_config_complete = true
+	
+	# Load Scene
+	var scene = load("res://Scenes/Scene.tscn").instance()
+	get_node("/root").add_child(scene)
+	
+	# Load the Map
+	map = load("res://Scenes/Maps/Scorpion/ScorpionMap.tscn").instance()
+	var maps = get_node("/root/Scene/Background")
+	maps.add_child(map)
+	checkpoints = map.get_node("Checkpoints")
+	SteamGlobals.NUM_CHECKPOINTS = checkpoints.get_child_count()
+	
+	# Load my Player and Camera
+	var my_vehicle = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"]
+	var my_player = load("res://Scenes/Vehicles/" + my_vehicle + ".tscn").instance()
+	my_player.set_name(str(SteamGlobals.STEAM_ID))
+	var players = get_node("/root/Scene/Players")
+	players.add_child(my_player)
+	
+	var my_cam = preload("res://Scenes/Cam.tscn").instance()
+	my_cam.name = "CAM_" + str(SteamGlobals.STEAM_ID)
+	var cams = get_node("/root/Scene/Cameras")
+	cams.add_child(my_cam)
+	
+	# Load other Players and their Cameras
+	for player_id in SteamGlobals.PLAYER_DATA.keys():
+		if player_id != SteamGlobals.STEAM_ID:
+			var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
+			var player = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
+			player.set_name(SteamGlobals.PLAYER_DATA[player_id]["steam_name"])
+			players.add_child(player)
+			
+			var cam = preload("res://Scenes/Cam.tscn").instance()
+			cam.set_name("CAM_" + str(player_id))
+			cams.add_child(cam)
+	
+	send_P2P_Packet("all", {"pre_config_complete": true, "steam_id": SteamGlobals.STEAM_ID})
+	
+	for player_id in SteamGlobals.PLAYER_DATA:
+		if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
+			if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
+				continue
+			else:
+				all_pre_config_complete = false
+				break
+		else:
+			all_pre_config_complete = false
+			break
+	
+	if all_pre_config_complete:
+		send_P2P_Packet("all", {"all_pre_config_complete": true})
+		print("All pre configs complete.")
+		_on_All_Pre_Configs_Complete()
+
+
+func start_Game() -> void:
+	# ! Need to set this to false whenever it ends.
+	SteamGlobals.GAME_STARTED = true
 
 
 ## Steam Callbacks
 
 
+# Lobby (No charselect popup)
 func _on_Lobby_Created(connect, lobbyID):
 	if connect == 1:
 		# Set Lobby ID
@@ -102,25 +308,51 @@ func _on_Lobby_Created(connect, lobbyID):
 		# Equivalent of printing into the chatbox
 		display_Message("Created lobby: " + lobbySetName.text)
 		
-		# Set Lobby Data (Params are key value pairs after lobbyID)
+		# Make it joinable (this should be done by default anyway)
+		Steam.setLobbyJoinable(SteamGlobals.LOBBY_ID, true)
+		
+		# Set Lobby Data
 		Steam.setLobbyData(lobbyID, "name", lobbySetName.text)
+		lobbyGetName.text = lobbySetName.text
+		
+		var RELAY = Steam.allowP2PPacketRelay(true)
+		print("Allowing Steam to be relay backup: " + str(RELAY))
+
+
+func _on_Lobby_Joined(lobbyID, perms, locked, response) -> void:
+	# Success
+	if response == 1:
+		# Set lobby ID
+		SteamGlobals.LOBBY_ID = lobbyID
+		
+		# Get lobby name
 		var name = Steam.getLobbyData(lobbyID, "name")
 		lobbyGetName.text = str(name)
-
-
-func _on_Lobby_Joined(lobbyID, perms, locked, response):
-	# Set lobby ID
-	SteamGlobals.LOBBY_ID = lobbyID
+		
+		# Get lobby members
+		get_Lobby_Members()
 	
-	# Get lobby name
-	var name = Steam.getLobbyData(lobbyID, "name")
-	lobbyGetName.text = str(name)
-	
-	# Get lobby members
-	get_Lobby_Members()
+	# Failure
+	else:
+		var FAIL_REASON: String
+		
+		match response:
+			2:	FAIL_REASON = "This lobby no longer exists."
+			3:	FAIL_REASON = "You don't have permission to join this lobby."
+			4:	FAIL_REASON = "The lobby is now full."
+			5:	FAIL_REASON = "Uh... something unexpected happened!"
+			6:	FAIL_REASON = "You are banned from this lobby."
+			7:	FAIL_REASON = "You cannot join due to having a limited account."
+			8:	FAIL_REASON = "This lobby is locked or disabled."
+			9:	FAIL_REASON = "This lobby is community locked."
+			10:	FAIL_REASON = "A user in the lobby has blocked you from joining."
+			11:	FAIL_REASON = "A user you have blocked is in the lobby."
+		
+		# Reopen the lobby list
+		_on_Join_pressed()
 
 
-func _on_Lobby_Join_Requested(lobbyID, friendID):
+func _on_Lobby_Join_Requested(lobbyID, friendID) -> void:
 	# Callback occurs when attempting to join via Steam overlay
 	
 	# Get lobby owner's name
@@ -131,12 +363,12 @@ func _on_Lobby_Join_Requested(lobbyID, friendID):
 	join_Lobby(lobbyID)
 
 
-func _on_Lobby_Data_Update(success, lobbyID, memberID, key):
+func _on_Lobby_Data_Update(success, lobbyID, memberID, key) -> void:
 	# Will complain if this callback is not handled
 	print("Success: "+str(success)+", Lobby ID: "+str(lobbyID)+", Member ID: "+str(memberID)+", Key: "+str(key))
 
 
-func _on_Lobby_Chat_Update(lobbyID, changedID, changeMakerID, chatState):
+func _on_Lobby_Chat_Update(lobbyID, changedID, changeMakerID, chatState) -> void:
 	# The user who made the lobby change
 	var CHANGER = Steam.getFriendPersonaName(changeMakerID)
 	
@@ -158,7 +390,7 @@ func _on_Lobby_Chat_Update(lobbyID, changedID, changeMakerID, chatState):
 	get_Lobby_Members()
 
 
-func _on_Lobby_Match_List(lobbies):
+func _on_Lobby_Match_List(lobbies) -> void:
 	# Ensure all lobby buttons from previous searches are deleted
 	for child in lobbyList.get_children():
 		lobbyList.remove_child(child)
@@ -179,6 +411,79 @@ func _on_Lobby_Match_List(lobbies):
 		
 		# Add lobby to the list
 		lobbyList.add_child(LOBBY_BUTTON)
+
+
+func _on_Lobby_Message(result, user, message, type) -> void:
+	# Display the sender and their message
+	var SENDER = Steam.getFriendPersonaName(user)
+	display_Message(str(SENDER) + ": " + str(message))
+
+
+func _on_Lobby_Invite():
+	pass
+
+
+func _on_Persona_Change(steam_id: int, flag: int) -> void:
+	# A user has had an info change; update the lobby list
+	display_Message("Persona change has occurred, lobby list will now refresh.")
+	# Update the lobby list
+	get_Lobby_Members()
+
+
+func _on_P2P_Session_Request(remoteID: int) -> void:
+	# Get the requester's name
+	var REQUESTER: String = Steam.getFriendPersonaName(remoteID)
+	
+	# Accept the P2P session request
+	Steam.acceptP2PSessionWithUser(remoteID)
+	
+	# Initial handshake
+	make_P2P_Handshake()
+
+
+func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
+	# If no error was given
+	if session_error == 0:
+		print("WARNING: Session failure with "+str(steamID)+" [no error given].")
+
+	# Else if target user was not running the same game
+	elif session_error == 1:
+		print("WARNING: Session failure with "+str(steamID)+" [target user not running the same game].")
+
+	# Else if local user doesn't own app / game
+	elif session_error == 2:
+		print("WARNING: Session failure with "+str(steamID)+" [local user doesn't own app / game].")
+
+	# Else if target user isn't connected to Steam
+	elif session_error == 3:
+		print("WARNING: Session failure with "+str(steamID)+" [target user isn't connected to Steam].")
+
+	# Else if connection timed out
+	elif session_error == 4:
+		print("WARNING: Session failure with "+str(steamID)+" [connection timed out].")
+
+	# Else if unused
+	elif session_error == 5:
+		print("WARNING: Session failure with "+str(steamID)+" [unused].")
+
+	# Else no known error
+	else:
+		print("WARNING: Session failure with "+str(steamID)+" [unknown error "+str(session_error)+"].")
+
+
+## Other "on" functions
+
+
+func _on_All_Ready():
+	get_tree().set_pause(true)
+	start_Pre_Config()
+	get_tree().set_pause(false)
+
+
+func _on_All_Pre_Configs_Complete():
+	get_tree().set_pause(true)
+	start_Game()
+	get_tree().set_pause(false)
 
 
 ## Command Line Checking
@@ -215,13 +520,68 @@ func _on_Join_pressed():
 	Steam.requestLobbyList()
 
 
+func _on_CloseLobbySelect_pressed():
+	lobbyPopup.hide()
+
+
 func _on_Leave_pressed():
-	pass # Replace with function body.
+	leave_Lobby()
 
 
 func _on_Message_pressed():
-	pass # Replace with function body.
+	send_Chat_Message()	
 
 
-func _on_Close_pressed():
-	lobbyPopup.hide()
+func _on_OpenCharSelect_pressed():
+	charSelectPopup.popup()
+
+
+func _on_CloseCharSelect_pressed():
+	charSelectPopup.hide()
+
+
+# Lobby (charselect popup)
+func _on_Vehicle_Selected(vehicle: String):
+	send_P2P_Packet("all", {"vehicle": vehicle})
+	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_NAME]["vehicle"] = vehicle
+	# Refresh the lobby as your vehicle has changed.
+	get_Lobby_Members()
+	charSelectPopup.hide()
+
+
+func _on_Start_pressed():
+	var all_ready = true
+	
+	if !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("vehicle"):
+		var valid_vehicles: Array = Global.VEHICLE_BASE_STATS.keys()
+		randomize()
+		var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
+		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
+	
+	if SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("ready"):
+		var ready = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"]
+		send_P2P_Packet("all", {"ready": !ready, "steam_id": SteamGlobals.STEAM_ID})
+		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"] = !ready
+		# Refresh the lobby as your readiness has changed.
+		get_Lobby_Members()
+	else:
+		send_P2P_Packet("all", {"ready": true, "steam_id": SteamGlobals.STEAM_ID})
+		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"] = true
+		# Refresh the lobby as your readiness has changed.
+		get_Lobby_Members()
+	
+	for player_id in SteamGlobals.PLAYER_DATA:
+		if SteamGlobals.PLAYER_DATA[player_id].has("ready"):
+			if SteamGlobals.PLAYER_DATA[player_id]["ready"]:
+				continue
+			else:
+				all_ready = false
+				break
+		else:
+			all_ready = false
+			break
+	
+	if all_ready:
+		send_P2P_Packet("all", {"all_ready": true})
+		print("All ready.")
+		_on_All_Ready()
