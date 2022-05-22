@@ -152,7 +152,7 @@ func read_P2P_Packet():
 			print("WARNING: Empty packet was read!")
 		
 		# Get the remote user's ID
-		var PACKET_ID: String = str(PACKET.steamIDRemote)
+		var PACKET_SENDER: String = str(PACKET["steam_id_remote"])
 		
 		# Make the packet readable
 		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
