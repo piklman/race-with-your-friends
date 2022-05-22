@@ -1,5 +1,8 @@
 extends Node
 
+# Network Variables
+var PACKET_READ_LIMIT = 250
+
 # Steam Variables
 var OWNED = false
 var ONLINE = false
