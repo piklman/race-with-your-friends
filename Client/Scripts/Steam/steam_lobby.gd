@@ -46,8 +46,6 @@ func _ready():
 
 
 func _process(delta):
-	Steam.run_callbacks()
-	
 	# If the player is connected, read packets
 	if SteamGlobals.LOBBY_ID > 0:
 		read_All_P2P_Packets()
