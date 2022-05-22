@@ -147,7 +147,7 @@ func send_Chat_Message() -> void:
 
 func make_P2P_Handshake() -> void:
 	# Sends a P2P handshake to the lobby
-	send_P2P_Packet("all", {"message": "handshake", "from": SteamGlobals.STEAM_ID})
+	send_P2P_Packet("all", {"message": "handshake"})
 
 
 func read_P2P_Packet():
@@ -176,7 +176,7 @@ func read_P2P_Packet():
 		# a "ready" packet. Can assume a steam_id will be provided
 		# Note: It is up to the final readier to send an "all_ready" packet.
 		if READABLE.has("ready"):
-			SteamGlobals.PLAYER_DATA[READABLE["steam_id"]]["ready"] = READABLE["ready"]
+			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["ready"] = READABLE["ready"]
 		
 		# an "all_ready" packet.
 		if READABLE.has("all_ready"):
@@ -186,8 +186,8 @@ func read_P2P_Packet():
 		
 		# a "pre_config_complete" packet. Can assume a steam_id will be provided
 		# Note: It is up to the final readier to send an "all_pre_config_complete" packet.
-		if READABLE.has("pre_config_complete") and READABLE.has("steam_id"):
-			SteamGlobals.PLAYER_DATA[READABLE["steam_id"]]["pre_config_complete"] = READABLE["pre_confg_complete"]
+		if READABLE.has("pre_config_complete"):
+			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_confg_complete"]
 		
 		# an "all_pre_config_complete" packet.
 		if READABLE.has("all_pre_config_complete"):
@@ -283,7 +283,7 @@ func start_Pre_Config() -> void:
 			cam.set_name("CAM_" + str(player_id))
 			cams.add_child(cam)
 	
-	send_P2P_Packet("all", {"pre_config_complete": true, "steam_id": SteamGlobals.STEAM_ID})
+	send_P2P_Packet("all", {"pre_config_complete": true})
 	
 	for player_id in SteamGlobals.PLAYER_DATA:
 		if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
@@ -580,7 +580,7 @@ func _on_Start_pressed():
 		# Refresh the lobby as your readiness has changed.
 		get_Lobby_Members()
 	else:
-		send_P2P_Packet("all", {"ready": true, "steam_id": SteamGlobals.STEAM_ID})
+		send_P2P_Packet("all", {"ready": true})
 		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"] = true
 		# Refresh the lobby as your readiness has changed.
 		get_Lobby_Members()
