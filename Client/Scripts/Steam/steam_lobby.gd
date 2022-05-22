@@ -158,14 +158,15 @@ func read_P2P_Packet():
 	if PACKET_SIZE > 0:
 		var PACKET: Dictionary = Steam.readP2PPacket(PACKET_SIZE, CHANNEL)
 		
-		if PACKET.empty():
-			print("WARNING: Empty packet was read!")
-		
+		if PACKET.empty() or PACKET == null:
+			print("WARNING: Read an empty packet with non-zero size!")
+			
 		# Get the remote user's ID
-		var PACKET_SENDER: String = str(PACKET["steam_id_remote"])
+		var PACKET_SENDER: int = PACKET["steam_id_remote"]
 		
 		# Make the packet readable
-		var READABLE: Dictionary = bytes2var(PACKET.data.subarray(1, PACKET_SIZE - 1))
+		var PACKET_CODE: PoolByteArray = PACKET["data"]
+		var READABLE: Dictionary = bytes2var(PACKET_CODE)
 		
 		# Print the packet to output
 		print("Packet: " + str(READABLE))
@@ -556,7 +557,7 @@ func _on_CloseCharSelect_pressed():
 # Lobby (charselect popup)
 func _on_Vehicle_Selected(vehicle: String):
 	send_P2P_Packet("all", {"vehicle": vehicle})
-	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_NAME]["vehicle"] = vehicle
+	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
 	# Refresh the lobby as your vehicle has changed.
 	get_Lobby_Members()
 	charSelectPopup.hide()
