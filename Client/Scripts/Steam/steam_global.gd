@@ -36,7 +36,3 @@ func _ready():
 	if !OWNED:
 		print("User doesn't own this game.")
 		get_tree().quit()
-
-
-func _process(delta):
-	Steam.run_callbacks()

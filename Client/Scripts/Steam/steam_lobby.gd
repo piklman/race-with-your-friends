@@ -18,7 +18,7 @@ onready var chatInput = $Message/TextEdit
 
 onready var charSelectPopup = $CharSelectPopup
 onready var openCharSelect = $OpenCharSelect
-onready var closeCharSelect = $CharSelectPopup/Close
+onready var closeCharSelect = $CharSelectPopup/CharSelect/CloseCharSelect
 
 var map: Node2D
 var checkpoints: Node2D
@@ -46,7 +46,19 @@ func _ready():
 
 
 func _process(delta):
-	read_P2P_Packet()
+	Steam.run_callbacks()
+	
+	# If the player is connected, read packets
+	if SteamGlobals.LOBBY_ID > 0:
+		read_All_P2P_Packets()
+
+
+func read_All_P2P_Packets(read_count: int = 0):
+	if read_count >= SteamGlobals.PACKET_READ_LIMIT:
+		return
+	if Steam.getAvailableP2PPacketSize(0) > 0:
+		read_P2P_Packet()
+		read_All_P2P_Packets(read_count + 1)
 
 
 ## Self-Made Functions
