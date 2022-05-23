@@ -205,6 +205,10 @@ func read_P2P_Packet():
 					send_P2P_Packet(str(PACKET_SENDER), {"vehicle": my_data["vehicle"]})
 				if my_data.has("ready"):
 					send_P2P_Packet(str(PACKET_SENDER), {"ready": my_data["ready"]})
+			elif READABLE["message"] == "all_ready":
+				_on_All_Ready()
+			elif READABLE["message"] == "all_pre_configs_complete":
+				_on_All_Pre_Configs_Complete()
 		
 		
 		# a "vehicle" packet.
@@ -218,14 +222,8 @@ func read_P2P_Packet():
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["ready"] = READABLE["ready"]
 			get_Lobby_Members()
 		
-		# an "all_ready" packet.
-		if READABLE.has("all_ready"):
-			all_ready = READABLE["all_ready"]
-			if all_ready:
-				_on_All_Ready()
-		
 		# a "pre_config_complete" packet. Can assume a steam_id will be provided
-		# Note: It is up to the final readier to send an "all_pre_config_complete" packet.
+		# Note: It is up to the final readier to send an "all_pre_configs_complete" message packet.
 		if READABLE.has("pre_config_complete"):
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
 			
@@ -244,15 +242,8 @@ func read_P2P_Packet():
 					break
 			
 			if all_pre_config_complete:
-				send_P2P_Packet("all", {"all_pre_config_complete": true})
+				send_P2P_Packet("all", {"message": "all_pre_configs_complete"})
 				print("All pre configs complete.")
-				_on_All_Pre_Configs_Complete()
-		
-		# an "all_pre_config_complete" packet.
-		if READABLE.has("all_pre_config_complete"):
-			all_pre_config_complete = READABLE["all_pre_config_complete"]
-			if all_pre_config_complete:
-				print("B")
 				_on_All_Pre_Configs_Complete()
 		
 		## In-Game
@@ -262,7 +253,6 @@ func read_P2P_Packet():
 				# We don't want to update our correct position with the network's estimated position
 				var player = get_node("/root/Scene/Players/" + str(PACKET_SENDER))
 				player.position = lerp(player.position, READABLE["position"], 0.2)
-		
 		
 		# a "rotation" packet.
 		if READABLE.has("rotation"):
@@ -664,6 +654,6 @@ func _on_Start_pressed():
 			break
 	
 	if all_ready:
-		send_P2P_Packet("all", {"all_ready": true})
+		send_P2P_Packet("all", {"message": "all_ready"})
 		print("All ready.")
 		_on_All_Ready()
