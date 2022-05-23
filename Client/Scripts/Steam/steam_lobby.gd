@@ -61,7 +61,7 @@ func _process(delta):
 		read_All_P2P_Packets()
 	
 	if SteamGlobals.GAME_STARTED:
-		time += 1/(10*delta) # Will take 0.1 seconds
+		time += 1/(40*delta) # Will take 0.025 seconds
 		if time >= 1/delta:
 			time = 0
 			if my_player.position != position_last_update:
@@ -243,9 +243,9 @@ func read_P2P_Packet():
 		# Note: It is up to the final readier to send an "all_pre_configs_complete" message packet.
 		if READABLE.has("pre_config_complete"):
 			var gets_to_pre_load = false
-			if !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("pre_config_complete"):
+			if !SteamGlobals.PLAYER_DATA[PACKET_SENDER].has("pre_config_complete"):
 				gets_to_pre_load = true
-			elif !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"]:
+			elif !SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"]:
 				gets_to_pre_load = true
 			
 			if gets_to_pre_load:

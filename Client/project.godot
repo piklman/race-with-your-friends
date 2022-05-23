@@ -19,6 +19,10 @@ config/icon="res://icon.png"
 Global="*res://Scripts/Game/globals.gd"
 SteamGlobals="*res://Scripts/Steam/steam_global.gd"
 
+[debug]
+
+settings/fps/force_fps=60
+
 [display]
 
 window/snapping/use_gpu_pixel_snap=false
@@ -26,6 +30,7 @@ window/snapping/use_gpu_pixel_snap=false
 [global]
 
 collision=false
+fps=false
 
 [importer_defaults]
 
