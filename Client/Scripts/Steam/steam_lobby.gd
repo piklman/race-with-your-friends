@@ -222,7 +222,7 @@ func read_P2P_Packet():
 		# a "pre_config_complete" packet. Can assume a steam_id will be provided
 		# The players pre config one after the other to ensure we can control data in a non-chaotic way.
 		# Note: It is up to the final readier to send an "all_pre_configs_complete" message packet.
-		if READABLE.has("pre_config_complete"):
+		if READABLE.has("pre_config_complete") and !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"]:
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
 			
 			# Our turn to handle preconfig
