@@ -24,9 +24,12 @@ var map: Node2D
 var checkpoints: Node2D
 
 var time: int = 0
-var my_player
-var position_last_update = Vector2.ZERO
-var rotation_last_update = 0
+var my_player: Node2D = null
+var position_last_update: Vector2 = Vector2.ZERO
+var rotation_last_update: int = 0
+
+var all_ready: bool = false
+var all_pre_config_complete: bool = false
 
 
 func _ready():
@@ -56,8 +59,8 @@ func _process(delta):
 		read_All_P2P_Packets()
 	
 	if SteamGlobals.GAME_STARTED:
-		print("HI2")
 		time += delta
+		print(1/delta)
 		if time >= 1/delta:
 			time = 0
 			print(my_player.position)
@@ -218,7 +221,7 @@ func read_P2P_Packet():
 		
 		# an "all_ready" packet.
 		if READABLE.has("all_ready"):
-			SteamGlobals.PLAYER_DATA["all_ready"] = READABLE["all_ready"]
+			all_ready = READABLE["all_ready"]
 			if READABLE["all_ready"]:
 				_on_All_Ready()
 		
@@ -229,7 +232,7 @@ func read_P2P_Packet():
 		
 		# an "all_pre_config_complete" packet.
 		if READABLE.has("all_pre_config_complete"):
-			SteamGlobals.PLAYER_DATA["all_pre_config_complete"] = READABLE["all_pre_config_complete"]
+			all_pre_config_complete = READABLE["all_pre_config_complete"]
 			if READABLE["all_pre_config_complete"]:
 				_on_All_Pre_Configs_Complete()
 		
@@ -325,8 +328,7 @@ func start_Pre_Config() -> void:
 	var cams = get_node("/root/Scene/Cameras")
 	cams.add_child(my_cam)
 	
-	var ids = SteamGlobals.PLAYER_DATA.keys().slice(0, SteamGlobals.PLAYER_DATA.size() - 2)
-	print(ids)
+	var ids = SteamGlobals.PLAYER_DATA.keys()
 	# Load other Players and their Cameras
 	for player_id in ids:
 		if int(player_id) != SteamGlobals.STEAM_ID:
@@ -350,6 +352,7 @@ func start_Pre_Config() -> void:
 				break
 	
 	send_P2P_Packet("all", {"pre_config_complete": true})
+	print(all_pre_config_complete)
 	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
 	if all_pre_config_complete:
 		send_P2P_Packet("all", {"all_pre_config_complete": true})
@@ -625,7 +628,6 @@ func _on_Start_pressed():
 	var all_ready = true
 	
 	if !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("vehicle"):
-		print("HI")
 		var valid_vehicles: Array = Global.VEHICLE_BASE_STATS.keys()
 		randomize()
 		var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
