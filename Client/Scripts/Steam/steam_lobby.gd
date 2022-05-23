@@ -233,16 +233,15 @@ func read_P2P_Packet():
 			var ids = SteamGlobals.PLAYER_DATA.keys()
 			
 			for player_id in ids:
-				if int(player_id) != SteamGlobals.STEAM_ID:
-					if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
-						if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
-							continue
-						else:
-							all_pre_config_complete = false
-							break
+				if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
+					if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
+						continue
 					else:
 						all_pre_config_complete = false
-						break	
+						break
+				else:
+					all_pre_config_complete = false
+					break
 			
 			if all_pre_config_complete:
 				send_P2P_Packet("all", {"all_pre_config_complete": true})
