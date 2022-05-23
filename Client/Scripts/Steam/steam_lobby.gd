@@ -76,7 +76,7 @@ func _process(delta):
 		if lerps[player_id].has("position"):
 			player.position = lerp(player.position, lerps[player_id]["position"], 0.2)
 			
-			if is_equal_approx(player.position, lerps[player_id]["position"]):
+			if player.position.is_equal_approx(lerps[player_id]["position"]):
 				lerps[player_id].erase("position")
 			
 		if lerps[player_id].has("rotation"):
