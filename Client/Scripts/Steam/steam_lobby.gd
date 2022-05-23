@@ -28,6 +28,8 @@ var my_player: Node2D = null
 var position_last_update: Vector2 = Vector2.ZERO
 var rotation_last_update: int = 0
 
+var lerps: Dictionary = {}
+
 var all_ready: bool = false
 var all_pre_configs_complete: bool = false
 
@@ -59,7 +61,7 @@ func _process(delta):
 		read_All_P2P_Packets()
 	
 	if SteamGlobals.GAME_STARTED:
-		time += 1
+		time += 1/(10*delta) # Will take 0.1 seconds
 		if time >= 1/delta:
 			time = 0
 			if my_player.position != position_last_update:
@@ -68,6 +70,24 @@ func _process(delta):
 			if my_player.rotation != rotation_last_update:
 				send_P2P_Packet("all", {"rotation": my_player.rotation})
 				rotation_last_update = my_player.rotation
+	
+	for player_id in lerps:
+		var player = get_node("/root/Scene/Players/" + str(player_id))
+		if lerps[player_id].has("position"):
+			player.position = lerp(player.position, lerps[player_id]["position"], 0.2)
+			
+			if is_equal_approx(player.position, lerps[player_id]["position"]):
+				lerps[player_id].erase("position")
+			
+		if lerps[player_id].has("rotation"):
+			player.rotation = lerp_angle(player.rotation, lerps[player_id]["rotation"], 0.2)
+			
+			if is_equal_approx(player.rotation, lerps[player_id]["rotation"]):
+				lerps[player_id].erase("rotation")
+		
+		# Needs to be at the end of this loop (cascading)
+		if lerps[player_id] == {}:
+			lerps.erase(player_id)
 
 
 func read_All_P2P_Packets(read_count: int = 0):
@@ -259,14 +279,20 @@ func read_P2P_Packet():
 			if PACKET_SENDER != SteamGlobals.STEAM_ID:
 				# We don't want to update our correct position with the network's estimated position
 				var player = get_node("/root/Scene/Players/" + str(PACKET_SENDER))
-				player.position = lerp(player.position, READABLE["position"], 0.2)
+				
+				if !lerps.has(PACKET_SENDER):
+					lerps[PACKET_SENDER] = {}
+				lerps[PACKET_SENDER]["position"] = READABLE["position"]
 		
 		# a "rotation" packet.
 		if READABLE.has("rotation"):
 			if PACKET_SENDER != SteamGlobals.STEAM_ID:
 				# We don't want to update our correct rotation with the network's estimated rotation
 				var player = get_node("/root/Scene/Players/" + str(PACKET_SENDER))
-				player.rotation = lerp_angle(player.rotation, READABLE["rotation"], 0.2)
+				
+				if !lerps.has(PACKET_SENDER):
+					lerps[PACKET_SENDER] = {}
+				lerps[PACKET_SENDER]["rotation"] = READABLE["rotation"]
 
 
 func send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
