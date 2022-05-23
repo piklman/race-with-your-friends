@@ -46,7 +46,7 @@ func _ready():
 	friction = std_friction
 	
 	# Get player data
-	my_data = SteamGlobals.PLAYER_DATA[name]
+	my_data = SteamGlobals.PLAYER_DATA[int(name)]
 	stats = Global.VEHICLE_BASE_STATS[my_data["vehicle"]]
 	$CenterContainer/ID.text = my_data["steam_name"]
 	
