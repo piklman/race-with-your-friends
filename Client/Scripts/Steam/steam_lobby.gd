@@ -341,6 +341,8 @@ func start_Pre_Config() -> void:
 			cam.set_name("CAM_" + str(player_id))
 			cams.add_child(cam)
 	
+	for player_id in ids:
+		if int(player_id) != SteamGlobals.STEAM_ID:
 			if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
 				if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
 					continue
