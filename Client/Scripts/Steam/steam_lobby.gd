@@ -33,6 +33,8 @@ var lerps: Dictionary = {}
 var all_ready: bool = false
 var all_pre_configs_complete: bool = false
 
+var local_pre_config_done: bool = false
+
 
 func _ready():
 	# Set steam name on screen
@@ -344,45 +346,47 @@ func display_Message(message) -> void:
 	lobbyOutput.add_text("\n" + str(message))
 
 
-func start_Pre_Config() -> void:	
-	# Load Scene
-	var scene = load("res://Scenes/Scene.tscn").instance()
-	get_node("/root").add_child(scene)
-	
-	# Load the Map
-	map = load("res://Scenes/Maps/Scorpion/ScorpionMap.tscn").instance()
-	var maps = get_node("/root/Scene/Background")
-	maps.add_child(map)
-	checkpoints = map.get_node("Checkpoints")
-	SteamGlobals.NUM_CHECKPOINTS = checkpoints.get_child_count()
-	
-	# Load my Player and Camera
-	var my_vehicle = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"]
-	my_player = load("res://Scenes/Vehicles/" + my_vehicle + ".tscn").instance()
-	my_player.set_name(str(SteamGlobals.STEAM_ID))
-	var players = get_node("/root/Scene/Players")
-	players.add_child(my_player)
-	
-	var my_cam = preload("res://Scenes/Cam.tscn").instance()
-	my_cam.name = "CAM_" + str(SteamGlobals.STEAM_ID)
-	var cams = get_node("/root/Scene/Cameras")
-	cams.add_child(my_cam)
-	
-	var ids = SteamGlobals.PLAYER_DATA.keys()
-	# Load other Players and their Cameras
-	for player_id in ids:
-		if int(player_id) != SteamGlobals.STEAM_ID:
-			var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
-			var player = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
-			player.set_name(str(player_id))
-			players.add_child(player)
-			
-			var cam = preload("res://Scenes/Cam.tscn").instance()
-			cam.set_name("CAM_" + str(player_id))
-			cams.add_child(cam)
-	
-	send_P2P_Packet("all", {"pre_config_complete": true})
-	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
+func start_Pre_Config() -> void:
+	if !local_pre_config_done:
+		# Load Scene
+		var scene = load("res://Scenes/Scene.tscn").instance()
+		get_node("/root").add_child(scene)
+		
+		# Load the Map
+		map = load("res://Scenes/Maps/Scorpion/ScorpionMap.tscn").instance()
+		var maps = get_node("/root/Scene/Background")
+		maps.add_child(map)
+		checkpoints = map.get_node("Checkpoints")
+		SteamGlobals.NUM_CHECKPOINTS = checkpoints.get_child_count()
+		
+		# Load my Player and Camera
+		var my_vehicle = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"]
+		my_player = load("res://Scenes/Vehicles/" + my_vehicle + ".tscn").instance()
+		my_player.set_name(str(SteamGlobals.STEAM_ID))
+		var players = get_node("/root/Scene/Players")
+		players.add_child(my_player)
+		
+		var my_cam = preload("res://Scenes/Cam.tscn").instance()
+		my_cam.name = "CAM_" + str(SteamGlobals.STEAM_ID)
+		var cams = get_node("/root/Scene/Cameras")
+		cams.add_child(my_cam)
+		
+		var ids = SteamGlobals.PLAYER_DATA.keys()
+		# Load other Players and their Cameras
+		for player_id in ids:
+			if int(player_id) != SteamGlobals.STEAM_ID:
+				var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
+				var player = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
+				player.set_name(str(player_id))
+				players.add_child(player)
+				
+				var cam = preload("res://Scenes/Cam.tscn").instance()
+				cam.set_name("CAM_" + str(player_id))
+				cams.add_child(cam)
+		
+		local_pre_config_done = true
+		send_P2P_Packet("all", {"pre_config_complete": true})
+		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
 
 
 func start_Game() -> void:
