@@ -56,9 +56,11 @@ func _process(delta):
 		read_All_P2P_Packets()
 	
 	if SteamGlobals.GAME_STARTED:
+		print("HI2")
 		time += delta
 		if time >= 1/delta:
 			time = 0
+			print(my_player.position)
 			if my_player.position != position_last_update:
 				send_P2P_Packet("all", {"position": my_player.position})
 				position_last_update = my_player.position
@@ -323,8 +325,10 @@ func start_Pre_Config() -> void:
 	var cams = get_node("/root/Scene/Cameras")
 	cams.add_child(my_cam)
 	
+	var ids = SteamGlobals.PLAYER_DATA.keys().slice(0, SteamGlobals.PLAYER_DATA.size() - 2)
+	print(ids)
 	# Load other Players and their Cameras
-	for player_id in SteamGlobals.PLAYER_DATA.keys():
+	for player_id in ids:
 		if int(player_id) != SteamGlobals.STEAM_ID:
 			var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
 			var player = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
@@ -335,9 +339,6 @@ func start_Pre_Config() -> void:
 			cam.set_name("CAM_" + str(player_id))
 			cams.add_child(cam)
 	
-	send_P2P_Packet("all", {"pre_config_complete": true})
-	
-	for player_id in SteamGlobals.PLAYER_DATA:
 		if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
 			if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
 				continue
@@ -348,6 +349,8 @@ func start_Pre_Config() -> void:
 			all_pre_config_complete = false
 			break
 	
+	send_P2P_Packet("all", {"pre_config_complete": true})
+	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
 	if all_pre_config_complete:
 		send_P2P_Packet("all", {"all_pre_config_complete": true})
 		print("All pre configs complete.")
@@ -547,6 +550,7 @@ func _on_All_Ready():
 
 
 func _on_All_Pre_Configs_Complete():
+	print("A")
 	get_tree().set_pause(true)
 	start_Game()
 	get_tree().set_pause(false)
@@ -642,8 +646,12 @@ func _on_Start_pressed():
 	
 	for player_id in SteamGlobals.PLAYER_DATA:
 		if SteamGlobals.PLAYER_DATA[player_id].has("ready"):
-			if SteamGlobals.PLAYER_DATA[player_id]["ready"]:
-				continue
+			if SteamGlobals.PLAYER_DATA[player_id].has("vehicle"):
+				if SteamGlobals.PLAYER_DATA[player_id]["ready"]:
+					continue
+				else:
+					all_ready = false
+					break
 			else:
 				all_ready = false
 				break
