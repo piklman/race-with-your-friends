@@ -59,10 +59,9 @@ func _process(delta):
 		read_All_P2P_Packets()
 	
 	if SteamGlobals.GAME_STARTED:
-		time += delta
-		if time >= 0.2:
+		time += delta * 2500
+		if time >= 1/delta:
 			time = 0
-			print(my_player.position)
 			if my_player.position != position_last_update:
 				send_P2P_Packet("all", {"position": my_player.position})
 				position_last_update = my_player.position
