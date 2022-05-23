@@ -228,30 +228,31 @@ func read_P2P_Packet():
 				gets_to_pre_load = true
 			elif !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"]:
 				gets_to_pre_load = true
+			
+			if gets_to_pre_load:
+				SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
+			
+				# Our turn to handle preconfig
+				_on_All_Ready()
 				
-			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
-		
-			# Our turn to handle preconfig
-			_on_All_Ready()
-			
-			var all_pre_configs_complete = true
-			var ids = SteamGlobals.PLAYER_DATA.keys()
-			
-			for player_id in ids:
-				if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
-					if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
-						continue
+				var all_pre_configs_complete = true
+				var ids = SteamGlobals.PLAYER_DATA.keys()
+				
+				for player_id in ids:
+					if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
+						if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
+							continue
+						else:
+							all_pre_configs_complete = false
+							break
 					else:
 						all_pre_configs_complete = false
 						break
-				else:
-					all_pre_configs_complete = false
-					break
-			
-			if all_pre_configs_complete:
-				send_P2P_Packet("all", {"message": "all_pre_configs_complete"})
-				print("All pre configs complete.")
-				_on_All_Pre_Configs_Complete()
+				
+				if all_pre_configs_complete:
+					send_P2P_Packet("all", {"message": "all_pre_configs_complete"})
+					print("All pre configs complete.")
+					_on_All_Pre_Configs_Complete()
 		
 		## In-Game
 		# a "position" packet.
