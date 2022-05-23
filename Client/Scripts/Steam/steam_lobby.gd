@@ -229,6 +229,26 @@ func read_P2P_Packet():
 		# Note: It is up to the final readier to send an "all_pre_config_complete" packet.
 		if READABLE.has("pre_config_complete"):
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
+			
+			var all_pre_config_complete = true
+			var ids = SteamGlobals.PLAYER_DATA.keys()
+			
+			for player_id in ids:
+				if int(player_id) != SteamGlobals.STEAM_ID:
+					if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
+						if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
+							continue
+						else:
+							all_pre_config_complete = false
+							break
+					else:
+						all_pre_config_complete = false
+						break	
+			
+			if all_pre_config_complete:
+				send_P2P_Packet("all", {"all_pre_config_complete": true})
+				print("All pre configs complete.")
+				_on_All_Pre_Configs_Complete()
 		
 		# an "all_pre_config_complete" packet.
 		if READABLE.has("all_pre_config_complete"):
@@ -302,9 +322,7 @@ func display_Message(message) -> void:
 	lobbyOutput.add_text("\n" + str(message))
 
 
-func start_Pre_Config() -> void:
-	var all_pre_config_complete = true
-	
+func start_Pre_Config() -> void:	
 	# Load Scene
 	var scene = load("res://Scenes/Scene.tscn").instance()
 	get_node("/root").add_child(scene)
@@ -341,25 +359,8 @@ func start_Pre_Config() -> void:
 			cam.set_name("CAM_" + str(player_id))
 			cams.add_child(cam)
 	
-	for player_id in ids:
-		if int(player_id) != SteamGlobals.STEAM_ID:
-			if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
-				if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
-					continue
-				else:
-					all_pre_config_complete = false
-					break
-			else:
-				all_pre_config_complete = false
-				break
-	
 	send_P2P_Packet("all", {"pre_config_complete": true})
-	print(all_pre_config_complete)
 	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
-	if all_pre_config_complete:
-		send_P2P_Packet("all", {"all_pre_config_complete": true})
-		print("All pre configs complete.")
-		_on_All_Pre_Configs_Complete()
 
 
 func start_Game() -> void:
