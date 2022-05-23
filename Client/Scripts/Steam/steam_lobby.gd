@@ -281,7 +281,7 @@ func start_Pre_Config() -> void:
 		if player_id != SteamGlobals.STEAM_ID:
 			var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
 			var player = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
-			player.set_name(player_id)
+			player.set_name(str(player_id))
 			players.add_child(player)
 			
 			var cam = preload("res://Scenes/Cam.tscn").instance()
