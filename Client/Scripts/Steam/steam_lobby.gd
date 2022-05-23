@@ -173,10 +173,15 @@ func read_P2P_Packet():
 		
 		# Deal with packet data below
 		
+		if READABLE.has("vehicle"):
+			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["vehicle"] = READABLE["vehicle"]
+			get_Lobby_Members()
+		
 		# a "ready" packet. Can assume a steam_id will be provided
 		# Note: It is up to the final readier to send an "all_ready" packet.
 		if READABLE.has("ready"):
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["ready"] = READABLE["ready"]
+			get_Lobby_Members()
 		
 		# an "all_ready" packet.
 		if READABLE.has("all_ready"):
