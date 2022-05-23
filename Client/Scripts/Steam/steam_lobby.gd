@@ -339,15 +339,15 @@ func start_Pre_Config() -> void:
 			cam.set_name("CAM_" + str(player_id))
 			cams.add_child(cam)
 	
-		if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
-			if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
-				continue
+			if SteamGlobals.PLAYER_DATA[player_id].has("pre_config_complete"):
+				if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
+					continue
+				else:
+					all_pre_config_complete = false
+					break
 			else:
 				all_pre_config_complete = false
 				break
-		else:
-			all_pre_config_complete = false
-			break
 	
 	send_P2P_Packet("all", {"pre_config_complete": true})
 	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
