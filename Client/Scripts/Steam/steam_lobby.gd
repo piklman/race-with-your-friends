@@ -192,7 +192,7 @@ func read_P2P_Packet():
 		# a "pre_config_complete" packet. Can assume a steam_id will be provided
 		# Note: It is up to the final readier to send an "all_pre_config_complete" packet.
 		if READABLE.has("pre_config_complete"):
-			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_confg_complete"]
+			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
 		
 		# an "all_pre_config_complete" packet.
 		if READABLE.has("all_pre_config_complete"):
@@ -576,6 +576,7 @@ func _on_Start_pressed():
 		randomize()
 		var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
 		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
+		send_P2P_Packet("all", {"vehicle": vehicle})
 	
 	if SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("ready"):
 		var ready = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"]
