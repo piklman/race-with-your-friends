@@ -196,6 +196,7 @@ func read_P2P_Packet():
 		## Lobby
 		# a "message" packet.
 		if READABLE.has("message"):
+			print("MESSAGE")
 			# Handshake - we send all our data with the newcomer.
 			if READABLE["message"] == "handshake":
 				var my_data = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]
