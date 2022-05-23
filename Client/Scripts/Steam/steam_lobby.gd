@@ -575,7 +575,7 @@ func _on_Start_pressed():
 	
 	if SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("ready"):
 		var ready = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"]
-		send_P2P_Packet("all", {"ready": !ready, "steam_id": SteamGlobals.STEAM_ID})
+		send_P2P_Packet("all", {"ready": !ready})
 		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["ready"] = !ready
 		# Refresh the lobby as your readiness has changed.
 		get_Lobby_Members()
