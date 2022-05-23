@@ -20,6 +20,7 @@ var MAX_MEMBERS = 4
 var SELECTED_VEHICLE
 var PLAYER_DATA: Dictionary
 var NUM_CHECKPOINTS: int
+var GAME_STARTED: bool
 
 
 func _ready():
@@ -39,6 +40,8 @@ func _ready():
 	if !OWNED:
 		print("User doesn't own this game.")
 		get_tree().quit()
+	
+	GAME_STARTED = false
 
 
 func _process(delta):

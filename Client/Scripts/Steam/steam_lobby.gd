@@ -23,6 +23,11 @@ onready var closeCharSelect = $CharSelectPopup/CharSelect/CloseCharSelect
 var map: Node2D
 var checkpoints: Node2D
 
+var time: int = 0
+var my_player
+var position_last_update = Vector2.ZERO
+var rotation_last_update = 0
+
 
 func _ready():
 	# Set steam name on screen
@@ -49,6 +54,17 @@ func _process(delta):
 	# If the player is connected, read packets
 	if SteamGlobals.LOBBY_ID > 0:
 		read_All_P2P_Packets()
+	
+	if SteamGlobals.GAME_STARTED:
+		time += delta
+		if time >= 1/delta:
+			time = 0
+			if my_player.position != position_last_update:
+				send_P2P_Packet("all", {"position": my_player.position})
+				position_last_update = my_player.position
+			if my_player.rotation != rotation_last_update:
+				send_P2P_Packet("all", {"rotation": my_player.rotation})
+				rotation_last_update = my_player.rotation
 
 
 func read_All_P2P_Packets(read_count: int = 0):
@@ -77,6 +93,8 @@ func join_Lobby(lobbyID) -> void:
 	
 	# Clear prev. lobby members lists
 	SteamGlobals.LOBBY_MEMBERS.clear()
+	
+	# ! need to request vehicle if selected before joined (same with ready)
 	
 	# Steam join request
 	Steam.joinLobby(lobbyID)
@@ -173,6 +191,19 @@ func read_P2P_Packet():
 		
 		# Deal with packet data below
 		
+		## Lobby
+		# a "message" packet.
+		if READABLE.has("message"):
+			# Handshake - we send all our data with the newcomer.
+			if READABLE["message"] == "handshake":
+				var my_data = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]
+				if my_data.has("vehicle"):
+					send_P2P_Packet(str(PACKET_SENDER), {"vehicle": my_data["vehicle"]})
+				if my_data.has("ready"):
+					send_P2P_Packet(str(PACKET_SENDER), {"ready": my_data["ready"]})
+		
+		
+		# a "vehicle" packet.
 		if READABLE.has("vehicle"):
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["vehicle"] = READABLE["vehicle"]
 			get_Lobby_Members()
@@ -199,6 +230,22 @@ func read_P2P_Packet():
 			SteamGlobals.PLAYER_DATA["all_pre_config_complete"] = READABLE["all_pre_config_complete"]
 			if READABLE["all_pre_config_complete"]:
 				_on_All_Pre_Configs_Complete()
+		
+		## In-Game
+		# a "position" packet.
+		if READABLE.has("position"):
+			if PACKET_SENDER != SteamGlobals.STEAM_ID:
+				# We don't want to update our correct position with the network's estimated position
+				var player = get_node("/root/Scene/Players/" + str(PACKET_SENDER))
+				player.position = lerp(player.position, READABLE["position"], 0.2)
+		
+		
+		# a "rotation" packet.
+		if READABLE.has("rotation"):
+			if PACKET_SENDER != SteamGlobals.STEAM_ID:
+				# We don't want to update our correct rotation with the network's estimated rotation
+				var player = get_node("/root/Scene/Players/" + str(PACKET_SENDER))
+				player.rotation = lerp_angle(player.rotation, READABLE["rotation"], 0.2)
 
 
 func send_P2P_Packet(target: String, packet_data: Dictionary) -> void:
@@ -266,7 +313,7 @@ func start_Pre_Config() -> void:
 	
 	# Load my Player and Camera
 	var my_vehicle = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"]
-	var my_player = load("res://Scenes/Vehicles/" + my_vehicle + ".tscn").instance()
+	my_player = load("res://Scenes/Vehicles/" + my_vehicle + ".tscn").instance()
 	my_player.set_name(str(SteamGlobals.STEAM_ID))
 	var players = get_node("/root/Scene/Players")
 	players.add_child(my_player)
@@ -278,7 +325,7 @@ func start_Pre_Config() -> void:
 	
 	# Load other Players and their Cameras
 	for player_id in SteamGlobals.PLAYER_DATA.keys():
-		if player_id != SteamGlobals.STEAM_ID:
+		if int(player_id) != SteamGlobals.STEAM_ID:
 			var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
 			var player = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
 			player.set_name(str(player_id))
@@ -562,6 +609,8 @@ func _on_CloseCharSelect_pressed():
 # Lobby (charselect popup)
 func _on_Vehicle_Selected(vehicle: String):
 	send_P2P_Packet("all", {"vehicle": vehicle})
+	if !SteamGlobals.PLAYER_DATA.has(SteamGlobals.STEAM_ID):
+		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID] = {"name": SteamGlobals.STEAM_NAME}
 	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
 	# Refresh the lobby as your vehicle has changed.
 	get_Lobby_Members()
@@ -572,6 +621,7 @@ func _on_Start_pressed():
 	var all_ready = true
 	
 	if !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("vehicle"):
+		print("HI")
 		var valid_vehicles: Array = Global.VEHICLE_BASE_STATS.keys()
 		randomize()
 		var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
