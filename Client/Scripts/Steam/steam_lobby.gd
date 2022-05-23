@@ -223,9 +223,13 @@ func read_P2P_Packet():
 			get_Lobby_Members()
 		
 		# a "pre_config_complete" packet. Can assume a steam_id will be provided
+		# The players pre config one after the other to ensure we can control data in a non-chaotic way.
 		# Note: It is up to the final readier to send an "all_pre_configs_complete" message packet.
 		if READABLE.has("pre_config_complete"):
 			SteamGlobals.PLAYER_DATA[PACKET_SENDER]["pre_config_complete"] = READABLE["pre_config_complete"]
+			
+			# Our turn to handle preconfig
+			_on_All_Ready()
 			
 			var all_pre_config_complete = true
 			var ids = SteamGlobals.PLAYER_DATA.keys()
@@ -539,6 +543,7 @@ func _on_P2P_Session_Connect_Fail(steamID: int, session_error: int) -> void:
 
 
 func _on_All_Ready():
+	# Initially, only run by the last player to ready up. Then the others are notified in order and they each call this.
 	get_tree().set_pause(true)
 	start_Pre_Config()
 	get_tree().set_pause(false)
@@ -654,6 +659,5 @@ func _on_Start_pressed():
 			break
 	
 	if all_ready:
-		send_P2P_Packet("all", {"message": "all_ready"})
-		print("All ready.")
+		# Secretly start the preconfig process, then after completing it, notify the others one by one.
 		_on_All_Ready()
