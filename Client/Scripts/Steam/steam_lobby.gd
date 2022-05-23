@@ -221,7 +221,7 @@ func read_P2P_Packet():
 		# an "all_ready" packet.
 		if READABLE.has("all_ready"):
 			all_ready = READABLE["all_ready"]
-			if READABLE["all_ready"]:
+			if all_ready:
 				_on_All_Ready()
 		
 		# a "pre_config_complete" packet. Can assume a steam_id will be provided
@@ -252,7 +252,8 @@ func read_P2P_Packet():
 		# an "all_pre_config_complete" packet.
 		if READABLE.has("all_pre_config_complete"):
 			all_pre_config_complete = READABLE["all_pre_config_complete"]
-			if READABLE["all_pre_config_complete"]:
+			if all_pre_config_complete:
+				print("B")
 				_on_All_Pre_Configs_Complete()
 		
 		## In-Game
