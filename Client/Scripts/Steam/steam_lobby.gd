@@ -562,7 +562,6 @@ func _on_CloseCharSelect_pressed():
 # Lobby (charselect popup)
 func _on_Vehicle_Selected(vehicle: String):
 	send_P2P_Packet("all", {"vehicle": vehicle})
-	print(SteamGlobals.STEAM_ID)
 	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
 	# Refresh the lobby as your vehicle has changed.
 	get_Lobby_Members()
