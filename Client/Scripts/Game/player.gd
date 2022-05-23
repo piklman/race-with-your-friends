@@ -25,8 +25,6 @@ onready var friction_value = get_node("../../Canvas/Stats/Physics/Friction")
 
 ### END DEBUG
 
-onready var GLOBALS = get_node("../../GLOBALS")
-
 # Base friction stat for all vehicles (decreases with offroad)
 var moving = false
 var friction
@@ -47,8 +45,9 @@ func _ready():
 	
 	# Get player data
 	my_data = SteamGlobals.PLAYER_DATA[int(name)]
+	print(stats)
 	stats = Global.VEHICLE_BASE_STATS[my_data["vehicle"]]
-	$CenterContainer/ID.text = my_data["steam_name"]
+	$PlayerName/Name.text = my_data["steam_name"]
 	
 	# When moving a kinematic body, you should not set its position directly.
 	# Instead, you use the move_and_collide() or move_and_slide() methods.

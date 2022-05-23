@@ -22,7 +22,7 @@ __meta__ = {
 "_editor_description_": ""
 }
 
-[node name="CenterContainer2" parent="." instance=ExtResource( 3 )]
+[node name="PlayerName" parent="." instance=ExtResource( 3 )]
 margin_left = -13.2441
 margin_top = -31.1131
 margin_right = 13.7559
