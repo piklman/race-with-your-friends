@@ -45,7 +45,7 @@ func _ready():
 	
 	# Get player data
 	my_data = SteamGlobals.PLAYER_DATA[int(name)]
-	print(stats)
+	print(my_data["vehicle"])
 	stats = Global.VEHICLE_BASE_STATS[my_data["vehicle"]]
 	$PlayerName/Name.text = my_data["steam_name"]
 	
