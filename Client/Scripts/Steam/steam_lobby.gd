@@ -60,8 +60,7 @@ func _process(delta):
 	
 	if SteamGlobals.GAME_STARTED:
 		time += delta
-		print(1/delta)
-		if time >= 1/delta:
+		if time >= 0.2:
 			time = 0
 			print(my_player.position)
 			if my_player.position != position_last_update:
