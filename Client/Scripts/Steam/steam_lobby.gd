@@ -98,8 +98,6 @@ func join_Lobby(lobbyID) -> void:
 	# Clear prev. lobby members lists
 	SteamGlobals.LOBBY_MEMBERS.clear()
 	
-	# ! need to request vehicle if selected before joined (same with ready)
-	
 	# Steam join request
 	Steam.joinLobby(lobbyID)
 
@@ -612,8 +610,6 @@ func _on_CloseCharSelect_pressed():
 # Lobby (charselect popup)
 func _on_Vehicle_Selected(vehicle: String):
 	send_P2P_Packet("all", {"vehicle": vehicle})
-	if !SteamGlobals.PLAYER_DATA.has(SteamGlobals.STEAM_ID):
-		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID] = {"name": SteamGlobals.STEAM_NAME}
 	SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
 	# Refresh the lobby as your vehicle has changed.
 	get_Lobby_Members()

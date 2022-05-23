@@ -47,7 +47,7 @@ func _ready():
 	my_data = SteamGlobals.PLAYER_DATA[int(name)]
 	print(my_data["vehicle"])
 	stats = Global.VEHICLE_BASE_STATS[my_data["vehicle"]]
-	$PlayerName/Name.text = my_data["name"]
+	$PlayerName/Name.text = my_data["steam_name"]
 	
 	# When moving a kinematic body, you should not set its position directly.
 	# Instead, you use the move_and_collide() or move_and_slide() methods.
