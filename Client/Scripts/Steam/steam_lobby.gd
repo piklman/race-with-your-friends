@@ -29,7 +29,7 @@ var position_last_update: Vector2 = Vector2.ZERO
 var rotation_last_update: int = 0
 
 var all_ready: bool = false
-var all_pre_config_complete: bool = false
+var all_pre_configs_complete: bool = false
 
 
 func _ready():
@@ -198,6 +198,7 @@ func read_P2P_Packet():
 		## Lobby
 		# a "message" packet.
 		if READABLE.has("message"):
+			print("MESSAGE")
 			# Handshake - we send all our data with the newcomer.
 			if READABLE["message"] == "handshake":
 				var my_data = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]
@@ -205,8 +206,6 @@ func read_P2P_Packet():
 					send_P2P_Packet(str(PACKET_SENDER), {"vehicle": my_data["vehicle"]})
 				if my_data.has("ready"):
 					send_P2P_Packet(str(PACKET_SENDER), {"ready": my_data["ready"]})
-			elif READABLE["message"] == "all_ready":
-				_on_All_Ready()
 			elif READABLE["message"] == "all_pre_configs_complete":
 				_on_All_Pre_Configs_Complete()
 		
@@ -231,7 +230,7 @@ func read_P2P_Packet():
 			# Our turn to handle preconfig
 			_on_All_Ready()
 			
-			var all_pre_config_complete = true
+			var all_pre_configs_complete = true
 			var ids = SteamGlobals.PLAYER_DATA.keys()
 			
 			for player_id in ids:
@@ -239,13 +238,13 @@ func read_P2P_Packet():
 					if SteamGlobals.PLAYER_DATA[player_id]["pre_config_complete"]:
 						continue
 					else:
-						all_pre_config_complete = false
+						all_pre_configs_complete = false
 						break
 				else:
-					all_pre_config_complete = false
+					all_pre_configs_complete = false
 					break
 			
-			if all_pre_config_complete:
+			if all_pre_configs_complete:
 				send_P2P_Packet("all", {"message": "all_pre_configs_complete"})
 				print("All pre configs complete.")
 				_on_All_Pre_Configs_Complete()
