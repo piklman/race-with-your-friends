@@ -59,7 +59,7 @@ func _process(delta):
 		read_All_P2P_Packets()
 	
 	if SteamGlobals.GAME_STARTED:
-		time += delta * 2500
+		time += 1
 		if time >= 1/delta:
 			time = 0
 			if my_player.position != position_last_update:
