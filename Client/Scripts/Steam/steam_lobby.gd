@@ -23,7 +23,7 @@ onready var closeCharSelect = $CharSelectPopup/CharSelect/CloseCharSelect
 var map: Node2D
 var checkpoints: Node2D
 
-var time: int = 0
+var time: float = 0
 var my_player: Node2D = null
 var position_last_update: Vector2 = Vector2.ZERO
 var rotation_last_update: int = 0
@@ -196,7 +196,6 @@ func read_P2P_Packet():
 		## Lobby
 		# a "message" packet.
 		if READABLE.has("message"):
-			print("MESSAGE")
 			# Handshake - we send all our data with the newcomer.
 			if READABLE["message"] == "handshake":
 				var my_data = SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]
@@ -547,7 +546,6 @@ func _on_All_Ready():
 
 
 func _on_All_Pre_Configs_Complete():
-	print("A")
 	get_tree().set_pause(true)
 	start_Game()
 	get_tree().set_pause(false)
