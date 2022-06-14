@@ -23,10 +23,15 @@ onready var e_value = get_node("../../Canvas/Stats/Physics/CoRValue")
 
 onready var friction_value = get_node("../../Canvas/Stats/Physics/Friction")
 
+var prev_max_spd_slider = null
+var prev_acc_slider = null
+
 ### END DEBUG
 
 # Base friction stat for all vehicles (decreases with offroad)
+var driving_direction: int = 0
 var moving_direction: int = 0
+
 var friction
 var std_friction = 0.8
 var ice_friction = 0.4
@@ -38,6 +43,8 @@ export (Color, RGB) var DEBUG_WARN
 var my_data: Dictionary
 var stats: Dictionary
 var velocity: Vector2
+
+var prev_max_spd
 
 func _ready():	
 	# Variable definition
@@ -58,6 +65,7 @@ func _ready():
 
 
 func _find_vector_angle(v1, v2):
+	# Returns the angle between v1 and v2
 	if v1 != Vector2.ZERO and v2 != Vector2.ZERO:
 		# Cosine rule. Gives result in rads
 		var angle = acos(v1.dot(v2) / (v1.length() * v2.length()))
@@ -66,6 +74,8 @@ func _find_vector_angle(v1, v2):
 
 
 func _find_vector_direction(v1, v2):
+	# Returns 1 if the second vector is over 90 degrees "away" from the
+	# first vector. Makes the most sense with normalized vectors.
 	var direction = 1
 	if abs(_find_vector_angle(v1, v2)) >= PI/4:
 		direction = -1
@@ -87,7 +97,7 @@ func _physics_process(delta):
 			velocity *= -Global.e
 		
 		_handle_input()
-		if moving_direction == 0: _handle_friction()
+		if driving_direction == 0: _handle_friction()
 
 
 var debug_setup = false
@@ -131,11 +141,15 @@ func _handle_debug():
 	
 	# max speed
 	max_spd_value.text = str(max_spd_slider.value)
-	stats["SPD"] = max_spd_slider.value
+	if prev_max_spd_slider != null and prev_max_spd_slider != max_spd_slider.value:
+		stats["SPD"] = max_spd_slider.value
+	prev_max_spd_slider = max_spd_slider.value
 	
 	# acc
 	acc_value.text = str(acc_slider.value)
-	stats["ACC"] = acc_slider.value
+	if prev_acc_slider != null and prev_acc_slider != acc_slider.value:
+		stats["ACC"] = acc_slider.value
+	prev_acc_slider = acc_slider.value
 	
 	if (acc_slider.value >= max_spd_slider.value
 		or acc_slider.value == 0):
@@ -161,11 +175,14 @@ func _handle_debug():
 
 
 func _accelerate(acc, max_spd):
-	var direction = _find_vector_direction(velocity, transform.x)
-	if acc > 0 and direction * velocity.length() + acc < max_spd:
+	moving_direction = _find_vector_direction(velocity.normalized(), transform.x)
+	
+	if acc > 0 and moving_direction * velocity.length() + acc < max_spd:
 		velocity += acc * transform.x
-	elif acc < 0 and direction * velocity.length() - acc > -max_spd:
+			
+	elif acc < 0 and moving_direction * velocity.length() - acc > -max_spd:
 		velocity += acc * transform.x
+			
 	else:
 		velocity = velocity.normalized() * max_spd
 
@@ -196,18 +213,18 @@ func _handle_input():
 	
 	# Movement
 	if Input.is_action_pressed("forward"):
-		moving_direction = 1
+		driving_direction = 1
 		_accelerate(stats["ACC"] * 1, (200 + stats["SPD"] * 40))
 	
 	if Input.is_action_just_released("forward"):
-		moving_direction = 0
+		driving_direction = 0
 		
 	if Input.is_action_pressed("reverse"):
-		moving_direction = -1
+		driving_direction = -1
 		_accelerate(-stats["ACC"] * 1, (200 + stats["SPD"] * 40))
 	
 	if Input.is_action_just_released("reverse"):
-		moving_direction = 0
+		driving_direction = 0
 	
 	# Turning	
 	if Input.is_action_pressed("left"):
@@ -219,12 +236,40 @@ func _handle_input():
 	if Input.is_action_pressed("right"):
 		if moving_direction == 1:
 			_turn(1, stats["HDL"])
-		if moving_direction == -1:
+		elif moving_direction == -1:
 			_turn(-1, stats["HDL"])
 	
-	
+	# Debug
 	if Input.is_action_just_pressed("teleport"):
 		global_position = get_global_mouse_position()
+	
+	if Input.is_action_just_pressed("boost"):
+		stats["ACC"] *= 100
+		prev_max_spd = stats["SPD"]
+		stats["SPD"] = 10
+	
+	if Input.is_action_just_released("boost"):
+		stats["ACC"] /= 100
+		stats["SPD"] = prev_max_spd
+	
+	if Input.is_action_just_pressed("grapple"):
+		var players = get_node("/root/Scene/Players")
+		var nearest_player: Node2D = null
+		var nearest_player_dist: float = 0
+		for player in players:
+			var dist = (self.position - player.position).length()
+			if dist > nearest_player_dist:
+				nearest_player_dist = dist
+				nearest_player = player
+		if nearest_player != null:
+			var hook = Line2D.new()
+			hook.add_point(self.position)
+			hook.add_point(nearest_player.position)
+			#! Make hook tex stretch across the line until it hits a wall
+			#! If it connects, pull the player to them.
+		else:
+			#! Do nothing, or animation??? No players.
+			pass
 
 
 func _handle_friction():

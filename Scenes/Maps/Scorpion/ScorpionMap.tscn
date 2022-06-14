@@ -1,18 +1,18 @@
 [gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://Sprites/Maps/The Scorpian map.png" type="Texture" id=1]
-[ext_resource path="res://Scripts/Game/Activators/cp_activator.gd" type="Script" id=2]
-[ext_resource path="res://Scripts/Game/Activators/lv_activator.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/Game/Activators/cp.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Game/Activators/lv.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Maps/Scorpion/ScorpionMap.gd" type="Script" id=4]
-[ext_resource path="res://Scripts/Game/Surface/ice.gd" type="Script" id=5]
-[ext_resource path="res://Scripts/Game/Surface/ice_handler.gd" type="Script" id=6]
-[ext_resource path="res://Scripts/Game/Activators/cp_activator_master.gd" type="Script" id=7]
-[ext_resource path="res://Scripts/Game/Activators/lv_activator_master.gd" type="Script" id=8]
+[ext_resource path="res://Scripts/Game/Activators/ice_handler.gd" type="Script" id=5]
+[ext_resource path="res://Scripts/Game/Activators/ice.gd" type="Script" id=6]
+[ext_resource path="res://Scripts/Game/Activators/cp_handler.gd" type="Script" id=7]
+[ext_resource path="res://Scripts/Game/Activators/lv_handler.gd" type="Script" id=8]
 [ext_resource path="res://Sprites/Maps/The Scorpion map bridge.png" type="Texture" id=9]
 
 [sub_resource type="SegmentShape2D" id=1]
-a = Vector2( 84.7522, -54.2698 )
-b = Vector2( -0.497803, 8.23022 )
+a = Vector2( 90.502, -49.52 )
+b = Vector2( 3.50201, 15.48 )
 
 [sub_resource type="SegmentShape2D" id=2]
 a = Vector2( 127.908, -58.4236 )
@@ -84,9 +84,7 @@ polygon = PoolVector2Array( -856.313, -514.441, -831.145, -488.827, -648.035, -6
 [node name="Ice" type="Node2D" parent="."]
 script = ExtResource( 6 )
 
-[node name="ice_0" type="Area2D" parent="Ice" groups=[
-"Ice Areas",
-]]
+[node name="ice_0" type="Area2D" parent="Ice" groups=["Ice Areas"]]
 collision_layer = 16
 script = ExtResource( 5 )
 
@@ -103,9 +101,7 @@ polygon = PoolVector2Array( -1159.24, -250.795, -1161.69, -253.914, -1166.81, -2
 [node name="Levels" type="Node2D" parent="."]
 script = ExtResource( 8 )
 
-[node name="lv_-1" type="Area2D" parent="Levels" groups=[
-"Levels",
-]]
+[node name="lv_-1" type="Area2D" parent="Levels" groups=["Levels"]]
 script = ExtResource( 3 )
 
 [node name="col_-1_1" type="CollisionShape2D" parent="Levels/lv_-1"]
@@ -116,9 +112,7 @@ shape = SubResource( 1 )
 position = Vector2( 387.592, -734.826 )
 shape = SubResource( 2 )
 
-[node name="lv_0" type="Area2D" parent="Levels" groups=[
-"Levels",
-]]
+[node name="lv_0" type="Area2D" parent="Levels" groups=["Levels"]]
 script = ExtResource( 3 )
 
 [node name="col_0_1" type="CollisionShape2D" parent="Levels/lv_0"]
@@ -156,9 +150,7 @@ polygon = PoolVector2Array( 559.299, -671.301, 545.381, -683.911, 514.088, -789.
 [node name="Checkpoints" type="Node2D" parent="."]
 script = ExtResource( 7 )
 
-[node name="cp_4" type="Area2D" parent="Checkpoints" groups=[
-"Checkpoints",
-]]
+[node name="cp_4" type="Area2D" parent="Checkpoints" groups=["Checkpoints"]]
 position = Vector2( -1559.83, -124.016 )
 rotation = 1.5708
 script = ExtResource( 2 )
@@ -167,36 +159,28 @@ script = ExtResource( 2 )
 position = Vector2( 882.058, 26.6134 )
 shape = SubResource( 6 )
 
-[node name="cp_3" type="Area2D" parent="Checkpoints" groups=[
-"Checkpoints",
-]]
+[node name="cp_3" type="Area2D" parent="Checkpoints" groups=["Checkpoints"]]
 script = ExtResource( 2 )
 
 [node name="col_3" type="CollisionShape2D" parent="Checkpoints/cp_3"]
 position = Vector2( -854.603, -381.691 )
 shape = SubResource( 7 )
 
-[node name="cp_2" type="Area2D" parent="Checkpoints" groups=[
-"Checkpoints",
-]]
+[node name="cp_2" type="Area2D" parent="Checkpoints" groups=["Checkpoints"]]
 script = ExtResource( 2 )
 
 [node name="col_2" type="CollisionShape2D" parent="Checkpoints/cp_2"]
 position = Vector2( -293.039, -225.608 )
 shape = SubResource( 8 )
 
-[node name="cp_1" type="Area2D" parent="Checkpoints" groups=[
-"Checkpoints",
-]]
+[node name="cp_1" type="Area2D" parent="Checkpoints" groups=["Checkpoints"]]
 script = ExtResource( 2 )
 
 [node name="col_1" type="CollisionShape2D" parent="Checkpoints/cp_1"]
 position = Vector2( -1195.26, 57.5862 )
 shape = SubResource( 9 )
 
-[node name="cp_0" type="Area2D" parent="Checkpoints" groups=[
-"Checkpoints",
-]]
+[node name="cp_0" type="Area2D" parent="Checkpoints" groups=["Checkpoints"]]
 script = ExtResource( 2 )
 
 [node name="col_0" type="CollisionShape2D" parent="Checkpoints/cp_0"]

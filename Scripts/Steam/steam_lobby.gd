@@ -17,6 +17,7 @@ onready var playerList = $Players/PlayerList
 onready var chatInput = $Message/TextEdit
 
 onready var charSelectPopup = $CharSelectPopup
+onready var gmSelectPopup = $GMSelectPopup
 onready var openCharSelect = $OpenCharSelect
 onready var closeCharSelect = $CharSelectPopup/CharSelect/CloseCharSelect
 
@@ -640,6 +641,14 @@ func _on_OpenCharSelect_pressed():
 
 func _on_CloseCharSelect_pressed():
 	charSelectPopup.hide()
+
+
+func _on_OpenGMSelect_pressed():
+	gmSelectPopup.popup()
+
+
+func _on_CloseGMSelect_pressed():
+	gmSelectPopup.hide()
 
 
 # Lobby (charselect popup)

@@ -51,8 +51,15 @@ text = "Leave Lobby"
 margin_left = 5.0
 margin_top = 395.0
 margin_right = 322.0
-margin_bottom = 590.0
+margin_bottom = 489.0
 text = "Select Vehicle"
+
+[node name="OpenGMSelect" type="Button" parent="."]
+margin_left = 5.0
+margin_top = 495.0
+margin_right = 322.0
+margin_bottom = 589.0
+text = "Select Game Mode"
 
 [node name="Message" type="Button" parent="."]
 margin_left = 851.0
@@ -162,13 +169,49 @@ margin_right = 98.7937
 margin_bottom = 19.0157
 text = "Close"
 
+[node name="GMSelectPopup" type="PopupPanel" parent="."]
+margin_left = 329.0
+margin_top = 6.0
+margin_right = 909.0
+margin_bottom = 231.0
+
+[node name="Panel" type="Panel" parent="GMSelectPopup"]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 576.0
+margin_bottom = 221.0
+
+[node name="Label" type="Label" parent="GMSelectPopup/Panel"]
+margin_left = 1.0
+margin_top = 1.0
+margin_right = 570.0
+margin_bottom = 15.0
+text = "Select Game Mode"
+align = 1
+
+[node name="CloseGMSelect" type="Button" parent="GMSelectPopup/Panel"]
+margin_left = -3.15454
+margin_top = -2.94878
+margin_right = 112.846
+margin_bottom = 17.0512
+text = "Cancel"
+
+[node name="Scroll" type="ScrollContainer" parent="GMSelectPopup/Panel"]
+margin_top = 19.0
+margin_right = 574.0
+margin_bottom = 221.0
+
+[node name="VBox" type="VBoxContainer" parent="GMSelectPopup/Panel/Scroll"]
+
 [connection signal="pressed" from="Create" to="." method="_on_Create_pressed"]
 [connection signal="pressed" from="Join" to="." method="_on_Join_pressed"]
 [connection signal="pressed" from="Start" to="." method="_on_Start_pressed"]
 [connection signal="pressed" from="Leave" to="." method="_on_Leave_pressed"]
 [connection signal="pressed" from="OpenCharSelect" to="." method="_on_OpenCharSelect_pressed"]
+[connection signal="pressed" from="OpenGMSelect" to="." method="_on_OpenGMSelect_pressed"]
 [connection signal="pressed" from="Message" to="." method="_on_Message_pressed"]
 [connection signal="pressed" from="LobbyPopup/Panel/CloseLobbySelect" to="." method="_on_CloseLobbySelect_pressed"]
 [connection signal="pressed" from="CharSelectPopup/CharSelect/CloseCharSelect" to="." method="_on_CloseCharSelect_pressed"]
+[connection signal="pressed" from="GMSelectPopup/Panel/CloseGMSelect" to="." method="_on_CloseGMSelect_pressed"]
 
 [editable path="CharSelectPopup/CharSelect"]

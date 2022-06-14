@@ -13,7 +13,8 @@ func _process(delta):
 
 
 func _on_ice_entered(body, name):
-	if not (name in ice_areas_in_contact_with_player):
+	print("HIs")
+	if not (ice_areas_in_contact_with_player.has(name)):
 		ice_areas_in_contact_with_player.append(name)
 
 
