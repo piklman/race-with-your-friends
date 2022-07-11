@@ -6,14 +6,14 @@ const SCROLL_MIN = Vector2(0.1, 0.1)
 const SCROLL_MAX = Vector2(2, 2)
 
 var player
+var delta_angle
 
 
 func _ready():
 	zoom = Vector2(DEFAULT_ZOOM, DEFAULT_ZOOM)
-	player = get_parent()
+	player = get_parent().get_parent()
+	delta_angle = Global._find_vector_angle(player.transform.x, Vector2.UP)
 	rotating = true
-	var delta_angle = Global._find_vector_angle(transform.x, player.transform.x)
-	rotate(-delta_angle)
 
 
 func _input(event):
@@ -26,3 +26,8 @@ func _input(event):
 			# Zoom out
 			elif event.button_index == BUTTON_WHEEL_DOWN and zoom + SCROLL_INC < SCROLL_MAX:
 				zoom += SCROLL_INC
+
+
+func _process(delta):
+	position = player.position
+	rotation = lerp_angle(rotation, player.rotation + delta_angle, 0.2)
