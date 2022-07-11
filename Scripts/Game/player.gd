@@ -64,24 +64,6 @@ func _ready():
 	velocity = Vector2.ZERO
 
 
-func _find_vector_angle(v1, v2):
-	# Returns the angle between v1 and v2
-	if v1 != Vector2.ZERO and v2 != Vector2.ZERO:
-		# Cosine rule. Gives result in rads
-		var angle = acos(v1.dot(v2) / (v1.length() * v2.length()))
-		return angle
-	return 0 # If a /0 error would occur, return 0
-
-
-func _find_vector_direction(v1, v2):
-	# Returns 1 if the second vector is over 90 degrees "away" from the
-	# first vector. Makes the most sense with normalized vectors.
-	var direction = 1
-	if abs(_find_vector_angle(v1, v2)) >= PI/4:
-		direction = -1
-	return direction
-
-
 func _process(delta):
 	if Global.PLAYER_ON_ICE:
 		friction = ice_friction
@@ -168,14 +150,11 @@ func _handle_debug():
 	Global.e = e_slider.value
 	
 	# friction
-	friction_value.text = "Friction: " + str(friction)
-	
-	# timer
-	
+	friction_value.text = "Friction: " + str(friction)	
 
 
 func _accelerate(acc, max_spd):
-	moving_direction = _find_vector_direction(velocity.normalized(), transform.x)
+	moving_direction = Global._find_vector_direction(velocity.normalized(), transform.x)
 	
 	if acc > 0 and moving_direction * velocity.length() + acc < max_spd:
 		velocity += acc * transform.x
@@ -204,12 +183,13 @@ func _turn(dir, hdl):
 	# We also need to consider forward and reverse motion: for forward, traversal is added,
 	# and for reverse, traversal is subtracted.
 	# (As transform.x is a unit vector)
-	var direction = _find_vector_direction(velocity, previous_forward_vector)
+	var direction = Global._find_vector_direction(velocity, previous_forward_vector)
 	velocity += direction * forward_vector_traversal * velocity.length()
 
 
 func _handle_input():
 	# Handles user input events.
+	
 	
 	# Movement
 	if Input.is_action_pressed("forward"):

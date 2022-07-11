@@ -370,7 +370,7 @@ func start_Pre_Config() -> void:
 		var my_cam = preload("res://Scenes/Cam.tscn").instance()
 		my_cam.name = "CAM_" + str(SteamGlobals.STEAM_ID)
 		var cams = get_node("/root/Scene/Cameras")
-		cams.add_child(my_cam)
+		my_player.add_child(my_cam)
 		
 		var ids = SteamGlobals.PLAYER_DATA.keys()
 		# Load other Players and their Cameras
@@ -383,7 +383,7 @@ func start_Pre_Config() -> void:
 				
 				var cam = preload("res://Scenes/Cam.tscn").instance()
 				cam.set_name("CAM_" + str(player_id))
-				cams.add_child(cam)
+				player.add_child(cam)
 		
 		local_pre_config_done = true
 		send_P2P_Packet("all", {"pre_config_complete": true})
