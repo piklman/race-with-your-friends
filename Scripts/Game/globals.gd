@@ -89,6 +89,7 @@ var PLAYER_ICE_FRICTION_APPLIED = false
 # Controls multi-layer levels (going under some stage elements)
 var STAGE_HEIGHT = 0
 
+
 func _find_vector_angle(v1, v2):
 	# Returns the angle between v1 and v2
 	if v1 != Vector2.ZERO and v2 != Vector2.ZERO:
