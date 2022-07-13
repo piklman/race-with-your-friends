@@ -88,3 +88,21 @@ var PLAYER_ICE_FRICTION_APPLIED = false
 
 # Controls multi-layer levels (going under some stage elements)
 var STAGE_HEIGHT = 0
+
+
+func _find_vector_angle(v1, v2):
+	# Returns the angle between v1 and v2
+	if v1 != Vector2.ZERO and v2 != Vector2.ZERO:
+		# Cosine rule. Gives result in rads
+		var angle = acos(v1.dot(v2) / (v1.length() * v2.length()))
+		return angle
+	return 0 # If a /0 error would occur, return 0
+
+
+func _find_vector_direction(v1, v2):
+	# Returns 1 if the second vector is over 90 degrees "away" from the
+	# first vector. Makes the most sense with normalized vectors.
+	var direction = 1
+	if abs(_find_vector_angle(v1, v2)) >= PI/4:
+		direction = -1
+	return direction
