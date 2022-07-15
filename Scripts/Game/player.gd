@@ -169,9 +169,9 @@ func _accelerate(acc, max_spd):
 func _turn(dir, hdl):
 	# d1
 	var previous_forward_vector = transform.x
-	var angle = hdl / (200 + stats["SPD"] * 40)
+	var angle = hdl / 200
 	var rotation_vector = velocity.rotated(angle)
-	var rotation_angle = dir * Global._find_vector_angle(velocity, rotation_vector)
+	var rotation_angle = dir * (Global._find_vector_angle(velocity, rotation_vector))
 	rotation += rotation_angle
 	
 	# d2

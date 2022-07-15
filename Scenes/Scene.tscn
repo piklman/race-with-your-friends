@@ -108,7 +108,7 @@ margin_left = 5.52972
 margin_top = 52.0
 margin_right = 130.53
 margin_bottom = 92.0
-max_value = 5.0
+max_value = 20.0
 value = 5.0
 __meta__ = {
 "_edit_use_anchors_": false
@@ -186,11 +186,8 @@ margin_left = 5.52971
 margin_top = 121.227
 margin_right = 130.53
 margin_bottom = 161.227
-max_value = 5.0
+max_value = 20.0
 value = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="TurnValue" type="Label" parent="Canvas/Stats/Turn"]
 margin_left = 132.178
