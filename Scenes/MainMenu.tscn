@@ -87,3 +87,36 @@ valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Editor" type="Control" parent="."]
+margin_left = 377.0
+margin_right = 633.0
+margin_bottom = 160.0
+
+[node name="EditorButton" type="Button" parent="Editor"]
+margin_left = -1.0
+margin_top = 338.0
+margin_right = 253.0
+margin_bottom = 497.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="Editor"]
+margin_top = 339.0
+margin_right = 254.0
+margin_bottom = 498.0
+mouse_filter = 2
+
+[node name="OfflineLabel" type="Label" parent="Editor/CenterContainer"]
+margin_left = 90.0
+margin_top = 72.0
+margin_right = 164.0
+margin_bottom = 86.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+text = "Track Editor"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

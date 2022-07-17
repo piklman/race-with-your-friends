@@ -15,6 +15,11 @@ func _process(delta):
 			get_node("/root").add_child(char_select)
 			scene_loaded = true
 			self.queue_free()
+		elif $Editor/EditorButton.pressed:
+			var editor = load("res://Scenes/Editor.tscn").instance()
+			get_node("/root").add_child(editor)
+			scene_loaded = true
+			self.queue_free()
 		elif $BackButton.pressed:
 			var title_screen = load("res://Scenes/TitleScreen.tscn").instance()
 			get_node("/root").add_child(title_screen)
