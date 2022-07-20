@@ -2,7 +2,7 @@ extends Button
 
 const BrushMode = preload("res://Scripts/Enum/BrushMode.gd")
 
-onready var core = $"/root/Editor/Core"
+onready var core = $"/root/Editor/Viewports/Drawing/Painting"
 
 
 func _on_None_pressed():

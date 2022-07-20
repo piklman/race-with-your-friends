@@ -234,6 +234,10 @@ func _handle_input():
 		stats["ACC"] /= 100
 		stats["SPD"] = prev_max_spd
 	
+	if Input.is_action_just_released("oil"):
+		stats["ACC"] /= 100
+		stats["SPD"] = prev_max_spd
+	
 	if Input.is_action_just_pressed("grapple"):
 		var players = get_node("/root/Scene/Players")
 		var nearest_player: Node2D = null

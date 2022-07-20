@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/Menus/title_screen.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/UI/main_menu_base.png" type="Texture" id=2]
-[ext_resource path="res://Sprites/UI/main_menu_cars_and_text.png" type="Texture" id=3]
-[ext_resource path="res://Sprites/UI/main_menu_base_sign.png" type="Texture" id=4]
+[ext_resource path="res://Graphics/MainMenu/main_menu_base.png" type="Texture" id=2]
+[ext_resource path="res://Graphics/MainMenu/main_menu_cars_and_text.png" type="Texture" id=3]
+[ext_resource path="res://Graphics/MainMenu/main_menu_base_sign.png" type="Texture" id=4]
 
 [node name="TitleScreen" type="Node2D"]
 position = Vector2( 344, 147 )
