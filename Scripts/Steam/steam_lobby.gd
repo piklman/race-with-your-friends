@@ -667,6 +667,7 @@ func _on_Start_pressed():
 		var valid_vehicles: Array = Global.VEHICLE_BASE_STATS.keys()
 		randomize()
 		var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
+		print(vehicle)
 		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
 		send_P2P_Packet("all", {"vehicle": vehicle})
 	

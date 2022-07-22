@@ -1,6 +1,6 @@
 [gd_scene load_steps=20 format=2]
 
-[ext_resource path="res://Sprites/Maps/The Scorpian map.png" type="Texture" id=1]
+[ext_resource path="res://Graphics/Maps/Scorpion/The Scorpian map.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Game/Activators/cp.gd" type="Script" id=2]
 [ext_resource path="res://Scripts/Game/Activators/lv.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Maps/Scorpion/ScorpionMap.gd" type="Script" id=4]
@@ -8,7 +8,7 @@
 [ext_resource path="res://Scripts/Game/Activators/ice.gd" type="Script" id=6]
 [ext_resource path="res://Scripts/Game/Activators/cp_handler.gd" type="Script" id=7]
 [ext_resource path="res://Scripts/Game/Activators/lv_handler.gd" type="Script" id=8]
-[ext_resource path="res://Sprites/Maps/The Scorpion map bridge.png" type="Texture" id=9]
+[ext_resource path="res://Graphics/Maps/Scorpion/The Scorpion map bridge.png" type="Texture" id=9]
 
 [sub_resource type="SegmentShape2D" id=1]
 a = Vector2( 90.502, -49.52 )
@@ -81,10 +81,20 @@ polygon = PoolVector2Array( -882.014, -354.053, -856.316, -379.706, -755.5, -276
 [node name="TyreCol2" type="CollisionPolygon2D" parent="Tyre"]
 polygon = PoolVector2Array( -856.313, -514.441, -831.145, -488.827, -648.035, -671.946, -464.43, -671.764, -463.648, -450.284, -424.126, -450.284, -424.456, -672.048, -91.8434, -672.69, -90.6708, -450.94, -51.4836, -450.694, -50.2164, -712.395, -660.329, -710.075 )
 
+[node name="Grass" type="Node2D" parent="."]
+script = ExtResource( 6 )
+
+[node name="grass_0" type="Area2D" parent="Grass"]
+collision_layer = 16
+script = ExtResource( 5 )
+
+[node name="Grass1" type="CollisionPolygon2D" parent="Grass/grass_0"]
+polygon = PoolVector2Array( -1507, 98, -1516, 57, -1528, 38, -1551, 17, -1507, 3, -1478, -12, -1440, -33, -1415, -45, -1384, -41, -1338, -22, -1270, 8, -1228, 22, -1209, 23, -1190, 21, -1171, 10, -1158, -4, -1155, -22, -1158, -40, -1176, -56, -1257, -111, -1264, -122, -1268, -165, -1270, -192, -1257, -267, -1245, -312, -1239, -332, -1233, -352, -1223, -377, -1208, -416, -1201, -421, -1193, -421, -1189, -418, -1189, -410, -1189, -392, -1189, -371, -1192, -354, -1193, -292, -1195, -281, -1196, -255, -1196, -211, -1194, -194, -1183, -142, -1179, -123, -1167, -104, -1155, -92, -1145, -77, -1141, -68, -1140, -48, -1139, -38, -1137, -35, -1138, -23, -1139, 19, -1134, 39, -1113, 73, -1150, 115, -1168, 153, -1177, 207, -1176, 260, -1170, 300, -1155, 335, -1130, 361, -1109, 388, -1100, 414, -1100, 439, -1104, 449, -1112, 457, -1127, 467, -1153, 479, -1185, 486, -1279, 488, -1309, 482, -1331, 475, -1351, 463, -1369, 452, -1384, 433, -1393, 416, -1397, 392, -1396, 349, -1367, 317, -1348, 304, -1328, 287, -1309, 271, -1296, 254, -1283, 237, -1273, 213, -1263, 185, -1263, 154, -1268, 124, -1279, 106, -1288, 88, -1300, 71, -1316, 56, -1336, 43, -1357, 32, -1381, 22, -1423, 21, -1449, 37, -1466, 55, -1474, 83, -1481, 98, -1488, 106, -1496, 107, -1501, 105 )
+
 [node name="Ice" type="Node2D" parent="."]
 script = ExtResource( 6 )
 
-[node name="ice_0" type="Area2D" parent="Ice" groups=["Ice Areas"]]
+[node name="ice_0" type="Area2D" parent="Ice" groups=["Ice"]]
 collision_layer = 16
 script = ExtResource( 5 )
 

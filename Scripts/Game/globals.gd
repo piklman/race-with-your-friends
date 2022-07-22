@@ -1,5 +1,6 @@
 extends Node
 
+# CONST VAR
 var COEFFICIENT_OF_RESTITUTION = 0.1
 var e = COEFFICIENT_OF_RESTITUTION
 
@@ -89,7 +90,22 @@ var PLAYER_ICE_FRICTION_APPLIED = false
 # Controls multi-layer levels (going under some stage elements)
 var STAGE_HEIGHT = 0
 
+enum TimeFormat {
+	HOURS = 8,
+	MINUTES = 4,
+	SECONDS = 2,
+	MILLISECONDS = 1,
+	
+	HHMMSSMSMS = 8 | 4 | 2 | 1,
+	MMSSMSMS = 4 | 2 | 1,
+	SSMSMS = 2 | 1
+	
+	HHMMSS = 8 | 4 | 2,
+	MMSS = 4 | 2	
+}
 
+
+# CONST FN
 func _find_vector_angle(v1, v2):
 	# Returns the angle between v1 and v2
 	if v1 != Vector2.ZERO and v2 != Vector2.ZERO:
@@ -106,3 +122,40 @@ func _find_vector_direction(v1, v2):
 	if abs(_find_vector_angle(v1, v2)) >= PI/4:
 		direction = -1
 	return direction
+
+
+func _multiply_str(string: String, times: int) -> String:
+	for i in range(times):
+		string += string
+	return string
+
+
+func _format_time(time:float, time_format: int = TimeFormat.HHMMSSMSMS) -> String:
+	# A function for converting seconds into HH:MM:SS, MM:SS or SS with an optional MSMS.
+	
+	var seconds = int(time)
+	var printable = ""
+	if time_format & TimeFormat.HOURS && seconds != 0:
+		var hours = str(seconds / 3600)
+		if len(hours) == 1:
+			hours = "0" + hours
+		printable += hours + ":"
+	else:
+		printable += "00:"
+	if time_format & TimeFormat.MINUTES && seconds != 0:
+		var minutes = str(seconds / 60)
+		if len(minutes) == 1:
+			minutes = "0" + minutes
+		printable += minutes + ":"
+	else:
+		printable += "00:"
+	if time_format & TimeFormat.SECONDS:
+		var s = str(seconds % 60)
+		if len(s) == 1:
+			s = "0" + s
+		printable += s
+	if time_format & TimeFormat.MILLISECONDS:
+		var ms = time - seconds
+		printable += ":" + str(ms * 1000)
+	
+	return printable
