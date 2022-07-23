@@ -32,9 +32,15 @@ func _input(event):
 				# Zoom out
 				elif event.button_index == BUTTON_WHEEL_DOWN and zoom + SCROLL_INC < SCROLL_MAX:
 					zoom += SCROLL_INC
+		current = true
+	else:
+		current = false
 
 
 func _process(delta):
 	if !spectating:
 		position = player.position
 		rotation = lerp_angle(rotation, player.rotation + delta_angle, 0.2)
+		current = true
+	else:
+		current = false

@@ -19,6 +19,7 @@ var MAX_MEMBERS = 4
 # Game Variables
 var SELECTED_VEHICLE
 var PLAYER_DATA: Dictionary
+var BOT_DATA: Dictionary
 var NUM_CHECKPOINTS: int
 var GAME_STARTED: bool = false
 

@@ -21,6 +21,8 @@ onready var gmSelectPopup = $GMSelectPopup
 onready var openCharSelect = $OpenCharSelect
 onready var closeCharSelect = $CharSelectPopup/CharSelect/CloseCharSelect
 
+var host: bool = false
+
 var map: Node2D
 var checkpoints: Node2D
 
@@ -101,6 +103,16 @@ func read_All_P2P_Packets(read_count: int = 0):
 		read_All_P2P_Packets(read_count + 1)
 
 
+## Frequency Functions
+
+
+func get_random_vehicle():
+	var valid_vehicles: Array = Global.VEHICLE_BASE_STATS.keys()
+	randomize()
+	var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
+	return vehicle
+
+
 ## Self-Made Functions
 
 
@@ -108,6 +120,7 @@ func create_Lobby() -> void:
 	# Check no other lobbies are running
 	if SteamGlobals.LOBBY_ID == 0:
 		Steam.createLobby(lobby_status.Public, SteamGlobals.MAX_MEMBERS)
+	host = true
 
 
 func join_Lobby(lobbyID) -> void:
@@ -154,9 +167,14 @@ func add_Player_List(steam_id, steam_name) -> void:
 	# Populate player list
 	for MEMBER in SteamGlobals.LOBBY_MEMBERS:
 		
-		var text = str(MEMBER["steam_name"])
+		var text = ""
 		
 		# Establish player state
+		if steam_id == Steam.getLobbyOwner(SteamGlobals.LOBBY_ID):
+			text += "(HOST)"
+		
+		text += steam_name
+		
 		if SteamGlobals.PLAYER_DATA.has(MEMBER["steam_id"]):
 			if SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]].has("vehicle"):
 				text += " [" + SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]]["vehicle"] + "]"
@@ -276,6 +294,18 @@ func read_P2P_Packet():
 					print("All pre configs complete.")
 					_on_All_Pre_Configs_Complete()
 		
+		# a "bot_vehicle" packet. Will be sent by the host to all clients. Is a Dictionary object.
+		if READABLE.has("bot_vehicle"):
+			var bot_vehicle: Dictionary = READABLE["bot_vehicle"]
+			if !bot_vehicle["name"] in SteamGlobals.BOT_DATA:
+				SteamGlobals.BOT_DATA[bot_vehicle["name"]] = {"vehicle": bot_vehicle["vehicle"]}
+			else:
+				SteamGlobals.BOT_DATA[bot_vehicle["name"]]["vehicle"] = bot_vehicle["vehicle"]
+			
+			if SteamGlobals.BOT_DATA.size() == SteamGlobals.MAX_MEMBERS - SteamGlobals.PLAYER_DATA.size():
+				start_Bot_Config()
+				
+		
 		## In-Game
 		# a "position" packet.
 		if READABLE.has("position"):
@@ -374,6 +404,9 @@ func start_Pre_Config() -> void:
 		
 		var ids = SteamGlobals.PLAYER_DATA.keys()
 		# Load other Players and their Cameras
+		
+		var num_players = len(ids)
+		
 		for player_id in ids:
 			if int(player_id) != SteamGlobals.STEAM_ID:
 				var vehicle = SteamGlobals.PLAYER_DATA[player_id]["vehicle"]
@@ -388,6 +421,20 @@ func start_Pre_Config() -> void:
 		local_pre_config_done = true
 		send_P2P_Packet("all", {"pre_config_complete": true})
 		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["pre_config_complete"] = true
+
+
+func start_Bot_Config() -> void:
+	for i in range(SteamGlobals.BOT_DATA.size()):
+		var vehicle = SteamGlobals.BOT_DATA["BOT" + str(i)]["vehicle"]
+	
+		var bot = load("res://Scenes/Vehicles/" + vehicle + ".tscn").instance()
+		bot.set_name("BOT" + str(i))
+		
+		var bots = get_node("/root/Scene/Bots")
+		bots.add_child(bot)
+		var cam = preload("res://Scenes/Cam.tscn").instance()
+		cam.set_name("BOTCAM_" + str(i))
+		bot.add_child(cam)
 
 
 func start_Game() -> void:
@@ -580,6 +627,19 @@ func _on_All_Ready():
 	# Initially, only run by the last player to ready up. Then the others are notified in order and they each call this.
 	get_tree().set_pause(true)
 	start_Pre_Config()
+	var ids = SteamGlobals.PLAYER_DATA.keys()
+	var num_players = len(ids)
+	var num_bots = SteamGlobals.MAX_MEMBERS - num_players
+	if host:
+		for i in range(num_bots):
+			var name = "BOT" + str(i)
+			var vehicle = get_random_vehicle()
+			if !(name in SteamGlobals.BOT_DATA):
+				SteamGlobals.BOT_DATA[name] = {"vehicle": vehicle}
+			else:
+				SteamGlobals.BOT_DATA[name]["vehicle"] = vehicle
+			send_P2P_Packet("all", {"bot_vehicle": {"name": "BOT" + str(i), "vehicle": vehicle}})
+		start_Bot_Config()
 	get_tree().set_pause(false)
 
 
@@ -664,10 +724,7 @@ func _on_Start_pressed():
 	var all_ready = true
 	
 	if !SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID].has("vehicle"):
-		var valid_vehicles: Array = Global.VEHICLE_BASE_STATS.keys()
-		randomize()
-		var vehicle = valid_vehicles[randi() % valid_vehicles.size()]
-		print(vehicle)
+		var vehicle = get_random_vehicle()
 		SteamGlobals.PLAYER_DATA[SteamGlobals.STEAM_ID]["vehicle"] = vehicle
 		send_P2P_Packet("all", {"vehicle": vehicle})
 	

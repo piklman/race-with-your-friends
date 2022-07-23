@@ -51,10 +51,15 @@ func _ready():
 	friction = std_friction
 	
 	# Get player data
-	my_data = SteamGlobals.PLAYER_DATA[int(name)]
+	if "BOT" in name:
+		my_data = SteamGlobals.BOT_DATA[name]
+		$PlayerName/Name.text = name
+	else:
+		my_data = SteamGlobals.PLAYER_DATA[int(name)]
+		$PlayerName/Name.text = my_data["steam_name"]
+
 	stats = Global.VEHICLE_BASE_STATS[my_data["vehicle"]]
-	$PlayerName/Name.text = my_data["steam_name"]
-	
+
 	# When moving a kinematic body, you should not set its position directly.
 	# Instead, you use the move_and_collide() or move_and_slide() methods.
 	# These methods move the body along a given vector, and it will instantly

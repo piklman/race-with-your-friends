@@ -159,3 +159,7 @@ func _format_time(time:float, time_format: int = TimeFormat.HHMMSSMSMS) -> Strin
 		printable += ":" + str(ms * 1000)
 	
 	return printable
+
+
+#func _explosion(position: Vector2, size: float):
+#	var 

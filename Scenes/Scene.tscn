@@ -9,11 +9,13 @@
 
 [node name="Players" type="Node2D" parent="."]
 
-[node name="AI" type="Node2D" parent="."]
+[node name="Bots" type="Node2D" parent="."]
 
 [node name="Foreground" type="Node2D" parent="."]
 
 [node name="Cameras" type="Node2D" parent="."]
+
+[node name="Particles" type="Node2D" parent="."]
 
 [node name="Canvas" type="CanvasLayer" parent="."]
 
