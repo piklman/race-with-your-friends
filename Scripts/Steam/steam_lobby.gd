@@ -171,9 +171,9 @@ func add_Player_List(steam_id, steam_name) -> void:
 		
 		# Establish player state
 		if steam_id == Steam.getLobbyOwner(SteamGlobals.LOBBY_ID):
-			text += "(HOST)"
+			text += "(HOST) "
 		
-		text += steam_name
+		text += MEMBER["steam_name"]
 		
 		if SteamGlobals.PLAYER_DATA.has(MEMBER["steam_id"]):
 			if SteamGlobals.PLAYER_DATA[MEMBER["steam_id"]].has("vehicle"):

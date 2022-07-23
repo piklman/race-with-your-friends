@@ -14,7 +14,7 @@ var DATA
 var LOBBY_ID = 0
 var LOBBY_MEMBERS = []
 var LOBBY_INVITE_ARG
-var MAX_MEMBERS = 4
+var MAX_MEMBERS = 12
 
 # Game Variables
 var SELECTED_VEHICLE
